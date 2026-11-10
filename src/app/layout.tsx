@@ -2,6 +2,7 @@ import SiteShell from "@/components/SiteShell";
 import type { Metadata } from "next";
 import { siteUrl } from "@/lib/departments";
 import "./globals.css";
+import "@/components/symptoms/symptom-map.css";
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl()),
   title: {

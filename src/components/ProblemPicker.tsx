@@ -1,7 +1,9 @@
 "use client";
 import { useState } from "react";
+import SymptomMap from "./symptoms/SymptomMap";
+import TreatmentNavigator from "./symptoms/TreatmentNavigator";
 import TrackedLink from "./TrackedLink";
-export default function ProblemPicker({
+function BasicProblemPicker({
   problems,
   department,
 }: {
@@ -44,4 +46,32 @@ export default function ProblemPicker({
       )}
     </section>
   );
+}
+
+export default function ProblemPicker(props: {
+  problems: readonly string[];
+  department: string;
+}) {
+  if (props.department === "proktologia" || props.department === "flebologia")
+    return (
+      <>
+        <TreatmentNavigator
+          key={props.department}
+          specialty={props.department}
+        />
+        <details className="symptom-map-disclosure" id="mapa-objawow">
+          <summary>
+            Chcę najpierw nazwać i uporządkować objawy — otwórz mapę
+          </summary>
+          <SymptomMap key={props.department} specialty={props.department} />
+          <a
+            className="symptom-full-link"
+            href={"/" + props.department + "/objawy"}
+          >
+            Otwórz mapę na osobnej stronie ↗
+          </a>
+        </details>
+      </>
+    );
+  return <BasicProblemPicker {...props} />;
 }

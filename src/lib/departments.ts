@@ -6,7 +6,7 @@ export const departments = [
     mark: "01",
     lead: "Spokojnie porozmawiajmy o tym, co Cię niepokoi.",
     description:
-      "Dyskretna konsultacja, zrozumiałe wyjaśnienia i indywidualny plan postępowania.",
+      "Gdy ból, krwawienie lub wypadanie tkanek utrudniają codzienność. Rozmowa, badanie i indywidualny plan leczenia.",
     problems: ["Krwawienie", "Ból", "Świąd", "Pieczenie", "Guzek", "Wyciek"],
   },
   {

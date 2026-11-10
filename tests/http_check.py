@@ -19,8 +19,13 @@ with tempfile.TemporaryDirectory() as tmp:
      if req('/')[0]==200:break
     except (OSError,urllib.error.URLError):time.sleep(.2)
    else:raise RuntimeError('Production server did not start')
-   for path in ['/','/proktologia','/flebologia','/chirurgia-ogolna','/medycyna-estetyczna','/kontakt','/rezerwacja','/admin','/robots.txt','/sitemap.xml']:
+   for path in ['/','/proktologia','/proktologia/objawy','/flebologia','/flebologia/objawy','/chirurgia-ogolna','/medycyna-estetyczna','/kontakt','/rezerwacja','/admin','/robots.txt','/sitemap.xml']:
     status,_,_=req(path);assert status==200,(path,status)
+   assert 'Chcę w końcu mieć to za sobą.' in req('/proktologia')[1]
+   assert 'Chcę usunąć pajączki' in req('/flebologia')[1]
+   assert 'Czytelna lista' in req('/proktologia/objawy')[1]
+   assert 'Dotyczy mnie' in req('/flebologia/objawy')[1]
+   assert req('/chirurgia-ogolna/objawy')[0]==404
    assert req('/api/content')[0]==401
    assert req('/api/session',{'password':'wrong'})[0]==401
    assert req('/api/session',{'password':env['ADMIN_PASSWORD']},'http://evil.test')[0]==403
@@ -36,7 +41,7 @@ with tempfile.TemporaryDirectory() as tmp:
    assert req('/api/telemetry',dict(id='http-test-event-1234',event='booking_opened',consent=True))[0]==201
    assert req('/api/telemetry',dict(id='http-test-event-1234',event='booking_opened',consent=True))[0]==201
    assert req('/api/telemetry',dict(id='http-test-event-5678',event='booking_confirmed',consent=True))[0]==400
-   print('PASS: 10 routes, auth, CSRF, persistence, draft privacy, publication, withdrawal and telemetry')
+   print('PASS: department and symptom routes, treatment intents, auth, CSRF, persistence, publication and telemetry')
   except Exception:
    log.flush();log.seek(0);print(log.read());raise
   finally:
