@@ -1,28 +1,44 @@
-import React from 'react';
-import type { Metadata } from 'next';
-
+import WebVitals from "@/components/WebVitals";
+import type { Metadata } from "next";
+import Link from "next/link";
+import Consent from "@/components/Consent";
+import Header from "@/components/Header";
+import { siteUrl } from "@/lib/departments";
+import "./globals.css";
 export const metadata: Metadata = {
-  metadataBase: new URL('https://bmclinic.co'),
+  metadataBase: new URL(siteUrl()),
   title: {
-    default: 'BM Clinic (bmclinic.co) — Fundament Strony i Bazy Danych Agenta AI',
-    template: '%s | BM Clinic (bmclinic.co)',
+    default: "BM Clinic — chirurgia i medycyna w Warszawie",
+    template: "%s | BM Clinic",
   },
   description:
-    'Fundament strony Next.js 15 z bazą telemetryczną Google Search (NavBoost, E-E-A-T, AI Overviews / GEO, Core Web Vitals) uczącą Agenta AI efektywności sprzedaży usług medycznych.',
-  alternates: {
-    canonical: 'https://bmclinic.co',
-  },
+    "Proktologia, flebologia, chirurgia ambulatoryjna i medycyna estetyczna. Poznaj zakres konsultacji BM Clinic.",
   robots: {
-    index: true,
-    follow: true,
+    index: process.env.SITE_INDEXABLE === "true",
+    follow: process.env.SITE_INDEXABLE === "true",
   },
 };
-
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="pl">
-      <body className="bg-slate-950 text-slate-100 antialiased selection:bg-cyan-500/30">
+      <body>
+        <a className="skip" href="#main">
+          Przejdź do treści
+        </a>
+        <Header />
         {children}
+        <footer>
+          <Link href="/">BM Clinic · Bujok Medical</Link>
+          <span>Spokojna przestrzeń. Świadome decyzje.</span>
+          <Link href="/prywatnosc">Prywatność</Link>
+          <Link href="/admin">Panel redakcyjny</Link>
+        </footer>
+        <Consent />
+        <WebVitals />
       </body>
     </html>
   );
