@@ -33,12 +33,12 @@ export const departments = [
     mark: "03",
     lead: "Zadbamy o to, co Ci dokucza.",
     description:
-      "Konsultacje chirurgiczne, drobne zabiegi ambulatoryjne i opieka nad gojeniem.",
+      "Konsultacje chirurgiczne, kwalifikacja do zabiegów operacyjnych, leczenie ambulatoryjne i opieka pooperacyjna.",
     problems: [
       "Wrastający paznokieć",
       "Leczenie ran",
       "Zmiany skórne",
-      "Drobne zabiegi",
+      "Leczenie operacyjne",
       "Kontrola gojenia",
       "Opieka po zabiegu",
     ],

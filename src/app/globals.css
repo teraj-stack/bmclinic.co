@@ -1011,3 +1011,19 @@ textarea:focus {
   background: white;
   color: #273b35;
 }
+
+.procedure-information {
+  border: 1px solid #c6b79a;
+  border-left: 4px solid #92733c;
+  border-radius: 10px;
+  padding: 18px 22px;
+  margin: 20px 0;
+  background: #faf6ee;
+  color: #2e3733;
+}
+.procedure-information h3 {
+  margin-top: 0;
+}
+.procedure-information p {
+  line-height: 1.65;
+}

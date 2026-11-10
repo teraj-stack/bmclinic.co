@@ -56,7 +56,13 @@ with tempfile.TemporaryDirectory() as tmp:
    assert req('/api/intake-admin/packets/'+fi['id'],{'action':'revoke'})[0]==200
    assert req('/api/intake/session')[0]==401
    assert req('/pacjent')[2]['Referrer-Policy']=='no-referrer'
-   print('PASS: production intake, MFA, CSRF, single-use invitation, encrypted draft, revision conflict, locked submission, staff review, revocation and privacy headers')
+   for procedure,expected in [('lhp',{'health','proctology','operative'}),('venous_surgery',{'health','operative'})]:
+    status,packet,_=req('/api/intake-admin/packets',{'forms':['registration'],'procedure':procedure});assert status==201,packet
+    access=packet['invitation'];assert req('/api/intake/open',{'token':access['token'],'pin':access['pin']})[0]==200
+    status,packet,_=req('/api/intake/session');p=packet['packet'];assert expected.issubset(set(p['forms']))
+    operative=next(f for f in p['schema'] if f['id']=='operative');assert 'zgon' in ' '.join(operative['information']['paragraphs'])
+    assert req('/api/intake/session',{'action':'submit','answers':{'patientName':'Synthetic Patient','identifier':'test'},'revision':0})[0]==400
+   print('PASS: production intake, MFA, CSRF, drafts, follow-up, immutable submissions, privacy and mandatory LHP/venous operative forms')
   except Exception:
    log.flush();log.seek(0);print(log.read());raise
   finally:server.terminate();server.wait(timeout=10)

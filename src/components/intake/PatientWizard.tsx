@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import {
   intakeForms,
   packetForms,
+  assignedFormIds,
   fieldVisible,
   updateAnswer,
   procedures,
@@ -12,6 +13,7 @@ import {
   type FormId,
   parseAnswers,
 } from "@/lib/intake/forms";
+import FormInformation from "./FormInformation";
 import IntakeFieldInput from "./IntakeFieldInput";
 import type { IntakePacket } from "@/lib/intake/store";
 type Packet = IntakePacket & {
@@ -22,7 +24,11 @@ type Packet = IntakePacket & {
 };
 const demoPacket: Packet = {
   id: "demo",
-  forms: ["registration", "health", "authorizations", "contact"],
+  forms: assignedFormIds(
+    ["registration", "health", "authorizations", "contact"],
+    "proctology",
+  ),
+  procedure: "proctology",
   formVersion: FORM_VERSION,
   notice: {
     version: "demo",
@@ -262,6 +268,10 @@ export default function PatientWizard({ demo = false }: { demo?: boolean }) {
               setPacket({
                 ...demoPacket,
                 procedure: e.target.value as ProcedureId,
+                forms: assignedFormIds(
+                  ["registration", "health", "authorizations", "contact"],
+                  e.target.value as ProcedureId,
+                ),
               });
               setAnswers({});
               setStep(0);
@@ -396,6 +406,9 @@ export default function PatientWizard({ demo = false }: { demo?: boolean }) {
                 {forms.map((f) => (
                   <section className="answer-group" key={f.id}>
                     <h3>{f.title}</h3>
+                    {f.information && (
+                      <FormInformation information={f.information} />
+                    )}
                     <dl>
                       {f.fields
                         .filter((field) => fieldVisible(field, answers))
@@ -436,6 +449,9 @@ export default function PatientWizard({ demo = false }: { demo?: boolean }) {
             ) : (
               <>
                 <p>{forms[step - 1]?.description}</p>
+                {forms[step - 1]?.information && (
+                  <FormInformation information={forms[step - 1].information!} />
+                )}
                 <div className="intake-fields">
                   {forms[step - 1]?.fields
                     .filter((field) => fieldVisible(field, answers))

@@ -1,3 +1,5 @@
+import { legacyV3Schemas } from "./legacy-v3";
+import { specialistForms, specialistIds } from "./specialist-forms";
 import { legacyV1Forms } from "./legacy-v1";
 import { legacyForms } from "./legacy-forms";
 export type IntakeField = {
@@ -14,6 +16,8 @@ export type IntakeField = {
 export type FormId =
   | "registration"
   | "health"
+  | "proctology"
+  | "operative"
   | "authorizations"
   | "contact"
   | "records_request"
@@ -24,6 +28,7 @@ export type IntakeForm = {
   title: string;
   description: string;
   fields: IntakeField[];
+  information?: { title: string; paragraphs: string[] };
 };
 export function question(
   id: string,
@@ -83,7 +88,7 @@ export const intakeForms: IntakeForm[] = [
   },
   {
     id: "health",
-    title: "Krótki wywiad przed wizytą",
+    title: "Wywiad ogólny przed wizytą lub zabiegiem",
     description:
       "Odpowiedz osobno na każde pytanie. Szczegóły rozwiną się tylko tam, gdzie będą potrzebne. Jeśli nie masz pewności, wybierz rozmowę z lekarzem. Nie odstawiaj samodzielnie leków.",
     fields: [
@@ -258,6 +263,18 @@ export const intakeForms: IntakeForm[] = [
     ],
   },
   {
+    id: "proctology",
+    title: "Wywiad proktologiczny",
+    description: "Odrębny wywiad przypisany przez personel.",
+    fields: [],
+  },
+  {
+    id: "operative",
+    title: "Wywiad przed zabiegiem operacyjnym",
+    description: "Odrębna kwalifikacja, bez podpisywania zgody operacyjnej.",
+    fields: [],
+  },
+  {
     id: "authorizations",
     title: "Osoby upoważnione",
     description:
@@ -403,12 +420,12 @@ export const intakeForms: IntakeForm[] = [
     ],
   },
 ];
-export const FORM_VERSION = "patient-intake-2026-11-10-v3";
+export const FORM_VERSION = "patient-intake-2026-11-10-v4";
 export function parseFormIds(raw: unknown): FormId[] {
   if (
     !Array.isArray(raw) ||
     !raw.length ||
-    raw.length > 7 ||
+    raw.length > intakeForms.length ||
     raw.some((id) => !intakeForms.some((f) => f.id === id)) ||
     new Set(raw).size !== raw.length ||
     !raw.includes("registration")
@@ -485,11 +502,17 @@ export const documentWorkflow = [
 ] as const;
 
 export const procedures = [
+  { id: "proctology", label: "Proktologia — konsultacja i diagnostyka" },
+  { id: "lhp", label: "LHP / operacyjne leczenie hemoroidów" },
+  {
+    id: "venous_surgery",
+    label: "Operacyjne leczenie żylaków kończyny dolnej",
+  },
   { id: "general", label: "Konsultacja / zabieg do ustalenia" },
   { id: "botulinum", label: "Toksyna botulinowa" },
   { id: "filler", label: "Wypełniacz" },
   { id: "laser", label: "Laseroterapia" },
-  { id: "minor_surgery", label: "Drobny zabieg chirurgiczny" },
+  { id: "minor_surgery", label: "Chirurgia — kwalifikacja do zabiegu" },
 ] as const;
 export type ProcedureId = (typeof procedures)[number]["id"];
 export function parseProcedure(value: unknown): ProcedureId {
@@ -500,6 +523,9 @@ export function parseProcedure(value: unknown): ProcedureId {
 }
 const procedureQuestions: Record<ProcedureId, IntakeField[]> = {
   general: [],
+  proctology: [],
+  lhp: [],
+  venous_surgery: [],
   botulinum: [
     ...question(
       "botulinumPreviousCheck",
@@ -598,23 +624,43 @@ const procedureQuestions: Record<ProcedureId, IntakeField[]> = {
     ),
   ],
 };
+export function assignedFormIds(
+  forms: FormId[],
+  procedure: ProcedureId,
+): FormId[] {
+  parseFormIds(forms);
+  const required = specialistIds(procedure);
+  for (const id of ["proctology", "operative"] as FormId[])
+    if (forms.includes(id) && !required.includes(id))
+      throw Error(
+        "Formularz wymaga właściwego modułu przypisanego przez personel.",
+      );
+  return [...new Set([...forms, ...required])];
+}
 export function schemaForProcedure(procedure: ProcedureId): IntakeForm[] {
-  return intakeForms.map((f) =>
-    f.id === "health"
-      ? {
-          ...f,
-          fields: [
-            ...f.fields.filter(
-              (q) => !["concerns", "explanationPreference"].includes(q.id),
-            ),
-            ...procedureQuestions[procedure],
-            ...f.fields.filter((q) =>
-              ["concerns", "explanationPreference"].includes(q.id),
-            ),
-          ],
-        }
-      : f,
-  );
+  const base = intakeForms
+    .filter((f) => !["proctology", "operative"].includes(f.id))
+    .map((f) =>
+      f.id === "health"
+        ? {
+            ...f,
+            fields: [
+              ...f.fields.filter(
+                (q) => !["concerns", "explanationPreference"].includes(q.id),
+              ),
+              ...procedureQuestions[procedure],
+              ...f.fields.filter((q) =>
+                ["concerns", "explanationPreference"].includes(q.id),
+              ),
+            ],
+          }
+        : f,
+    );
+  return [
+    ...base.slice(0, 2),
+    ...specialistForms(procedure, question),
+    ...base.slice(2),
+  ];
 }
 export type SchemaPacket = {
   forms: FormId[];
@@ -627,9 +673,11 @@ export function packetForms(packet: SchemaPacket): IntakeForm[] {
     packet.schema ??
     (packet.formVersion === FORM_VERSION
       ? schemaForProcedure(packet.procedure ?? "general")
-      : packet.formVersion === "patient-intake-2026-11-10-v1"
-        ? legacyV1Forms
-        : legacyForms);
+      : packet.formVersion === "patient-intake-2026-11-10-v3"
+        ? (legacyV3Schemas[packet.procedure ?? "general"] ?? legacyForms)
+        : packet.formVersion === "patient-intake-2026-11-10-v1"
+          ? legacyV1Forms
+          : legacyForms);
   return schema.filter((f) => packet.forms.includes(f.id));
 }
 export function fieldVisible(
@@ -662,8 +710,9 @@ export function attentionItems(
         fieldVisible(f, answers) &&
         answers[f.id] &&
         ((f.buttons &&
-          (answers[f.id] === "Tak" || /omówi|dokładnie/.test(answers[f.id]))) ||
-          (f.id === "concerns" &&
+          (answers[f.id] === "Tak" ||
+            /Nie wiem|Wolę|ustalę|omówi|dokładnie/.test(answers[f.id]))) ||
+          (["concerns", "operativeQuestions"].includes(f.id) &&
             answers[f.id] !== "Nie mam szczególnych obaw") ||
           (f.id === "explanationPreference" &&
             answers[f.id] === "Chcę dokładnie omówić przebieg zabiegu")),

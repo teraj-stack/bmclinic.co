@@ -6,10 +6,16 @@ import {
   packetForms,
   fieldVisible,
   attentionItems,
+  assignedFormIds,
   procedures,
   type ProcedureId,
   type FormId,
 } from "@/lib/intake/forms";
+import FormInformation from "./FormInformation";
+import {
+  operativeChecklist,
+  specialistIds,
+} from "@/lib/intake/specialist-forms";
 import type { IntakePacket } from "@/lib/intake/store";
 type Row = { id: string; status: string; created: number; revoked: number };
 type Detail = IntakePacket & {
@@ -21,7 +27,7 @@ type Detail = IntakePacket & {
 export default function StaffPanel() {
   const [ready, setReady] = useState(false),
     [code, setCode] = useState(""),
-    [procedure, setProcedure] = useState<ProcedureId>("general"),
+    [procedure, setProcedure] = useState<ProcedureId>("proctology"),
     [forms, setForms] = useState<FormId[]>([
       "registration",
       "health",
@@ -41,6 +47,7 @@ export default function StaffPanel() {
     [identity, setIdentity] = useState(false),
     [imported, setImported] = useState(false),
     [reference, setReference] = useState("");
+  const selectedForms = assignedFormIds(forms, procedure);
   const activity = useRef(Date.now());
   const deadline = useRef(0);
   const generation = useRef(0);
@@ -253,30 +260,42 @@ export default function StaffPanel() {
               preparatu lub urządzenia.
             </p>
             <div className="form-choices">
-              {intakeForms.map((f) => (
-                <label className="checkbox" key={f.id}>
-                  <input
-                    type="checkbox"
-                    checked={forms.includes(f.id)}
-                    disabled={f.id === "registration"}
-                    onChange={(e) =>
-                      setForms(
-                        e.target.checked
-                          ? [...forms, f.id]
-                          : forms.filter((id) => id !== f.id),
-                      )
-                    }
-                  />
-                  {f.title}
-                </label>
-              ))}
+              {intakeForms
+                .filter(
+                  (f) =>
+                    !["proctology", "operative"].includes(f.id) ||
+                    selectedForms.includes(f.id),
+                )
+                .map((f) => (
+                  <label className="checkbox" key={f.id}>
+                    <input
+                      type="checkbox"
+                      checked={selectedForms.includes(f.id)}
+                      disabled={
+                        f.id === "registration" ||
+                        specialistIds(procedure).includes(f.id)
+                      }
+                      onChange={(e) =>
+                        setForms(
+                          e.target.checked
+                            ? [...forms, f.id]
+                            : forms.filter((id) => id !== f.id),
+                        )
+                      }
+                    />
+                    {f.title}
+                  </label>
+                ))}
             </div>
             <button
               disabled={busy}
               onClick={() =>
                 void action(async () => {
                   setDetail(null);
-                  const p = await api("packets", { forms, procedure });
+                  const p = await api("packets", {
+                    forms: selectedForms,
+                    procedure,
+                  });
                   setInvite(p.invitation);
                   await load();
                 })
@@ -362,6 +381,23 @@ export default function StaffPanel() {
                 Nie stanowi podpisanej zgody na zabieg ani automatycznie
                 zakończonego wpisu w dokumentacji medycznej.
               </p>
+              {detail.forms.includes("operative") && (
+                <section className="clinical-attention">
+                  <h3>
+                    Przed zabiegiem operacyjnym — do uzupełnienia w dokumentacji
+                    klinicznej
+                  </h3>
+                  <ul>
+                    {operativeChecklist.map((item) => (
+                      <li key={item}>{item}</li>
+                    ))}
+                  </ul>
+                  <p>
+                    Weryfikacja tej ankiety nie potwierdza kwalifikacji,
+                    uzyskania zgody operacyjnej ani gotowości do zabiegu.
+                  </p>
+                </section>
+              )}
               <section className="clinical-attention">
                 <h3>Do omówienia z pacjentem</h3>
                 <p>
@@ -427,6 +463,9 @@ export default function StaffPanel() {
               {packetForms(detail).map((f) => (
                 <section key={f.id}>
                   <h3>{f.title}</h3>
+                  {f.information && (
+                    <FormInformation information={f.information} />
+                  )}
                   <dl>
                     {f.fields
                       .filter((field) => fieldVisible(field, detail.answers))
@@ -567,7 +606,8 @@ export default function StaffPanel() {
                         required
                       />
                       Potwierdziłem tożsamość i omówiłem odpowiedzi oraz
-                      oświadczenia z pacjentem.
+                      oświadczenia z pacjentem. To nie jest potwierdzenie
+                      uzyskania zgody operacyjnej ani kwalifikacji do zabiegu.
                     </label>
                     <label className="checkbox">
                       <input

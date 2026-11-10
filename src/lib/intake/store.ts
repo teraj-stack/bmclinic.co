@@ -12,6 +12,7 @@ import { mkdirSync } from "node:fs";
 import { dirname } from "node:path";
 import {
   FORM_VERSION,
+  assignedFormIds,
   parseAnswers,
   parseFormIds,
   packetForms,
@@ -95,7 +96,7 @@ export class IntakeStore {
     procedure: ProcedureId = "general",
   ) {
     parseProcedure(procedure);
-    parseFormIds(forms);
+    forms = assignedFormIds(forms, procedure);
     if (!notice.text || !notice.version)
       throw Error("Brak informacji dla pacjenta.");
     const id = randomBytes(16).toString("hex"),
@@ -153,10 +154,18 @@ export class IntakeStore {
         actor,
         source.procedure ?? "general",
       );
+      const selectedForms = assignedFormIds(
+        source.forms,
+        source.procedure ?? "general",
+      );
+      const oldSchema = packetForms(source);
+      const updatedSchema = schemaForProcedure(source.procedure ?? "general")
+        .filter((f) => selectedForms.includes(f.id))
+        .map((f) => oldSchema.find((old) => old.id === f.id) ?? f);
       const payload: IntakePacket = {
-        forms: source.forms,
-        formVersion: source.formVersion,
-        schema: packetForms(source),
+        forms: selectedForms,
+        formVersion: FORM_VERSION,
+        schema: updatedSchema,
         procedure: source.procedure ?? "general",
         notice,
         answers: { ...source.answers },
