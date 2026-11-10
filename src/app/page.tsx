@@ -5,6 +5,7 @@ import {
   evaluateBmClinicPageForAgent,
   type BmClinicPageConfig,
   type BmClinicTelemetry,
+  type ContentArchetype,
 } from '@/lib/seo-scoring-engine';
 import { buildBmClinicSchemaGraph } from '@/lib/schema-jsonld';
 
@@ -15,109 +16,76 @@ interface BmClinicPageEntry {
   insight: string;
 }
 
-const BMCLINIC_FOUNDATION_PAGES: BmClinicPageEntry[] = [
-  {
-    id: 1,
-    page: {
-      slug: 'laserowe-leczenie-hemoroidow-lhp',
-      urlPath: '/procedury/laserowe-leczenie-hemoroidow-lhp',
-      servicePillar: 'Proktologia Laserowa',
-      procedureTitle: 'Laserowa plastyka hemoroidów LHP (1470 nm) — zabieg 1 dnia',
-      contentArchetype: 'INTERACTIVE_3D_PROCEDURE_MODEL',
-      h1Headline: 'Laserowe leczenie hemoroidów LHP w Warszawie — bez nacięć i bez szwów',
-      h2AioQuestion:
-        'Na czym polega laserowe usuwanie hemoroidów metodą LHP i ile trwa rekonwalescencja?',
-      aioDirectAnswerPassage:
-        'Laserowe leczenie hemoroidów metodą LHP (Laser Hemorrhoidoplasty) wykorzystuje falę o długości 1470 nm, która zamyka naczynia krwionośne guzka krwawniczego od wewnątrz bez wycinania tkanek i bez zakładania szwów. Zabieg w BM Clinic trwa około 25–35 minut w znieczuleniu miejscowym lub krótkiej sedacji. Pacjent opuszcza klinikę po około 2 godzinach, a powrót do pracy biurowej i codziennej aktywności następuje zazwyczaj w ciągu 24–48 godzin.',
-      aioWordCount: 154,
-      leadPhysicianName: 'dr n. med. Jan Bujok',
-      physicianSpecialty: 'Chirurg Ogólny, Proktolog',
-      pwzVerified: true,
-      clinicalStudiesCited: 7,
-      originalAssetsCount: 11,
-      effortScore: 96,
-      schemaTypes: ['MedicalClinic', 'Physician', 'MedicalProcedure', 'FAQPage', 'VideoObject'],
-      entityDensityScore: 94,
-      clickDepth: 1,
-      siteFocusScore: 0.98,
-      siteRadiusDelta: 0.03,
-      basePricePln: 3200,
-    },
-    telemetry: {
-      impressions: 14800,
-      totalClicks: 1920,
-      goodClicks: 1765,
-      badClicks: 82,
-      lastLongestClicks: 1340,
-      avgDwellTimeSec: 248,
-      avgScrollDepthPct: 86.5,
-      interactive3dOrCalcUses: 1190,
-      onlineBookings: 148,
-      phoneCalls: 94,
-      calculatorLeads: 76,
-      revenuePln: 412000,
-      lcpMs: 1420,
-      inpMs: 68,
-      clsScore: 0.02,
-      ttfbMs: 180,
-    },
-    insight:
-      'Interaktywny model 3D przebiegu impulsu lasera + pasaż 154 słów pod H2 z autoryzacją dr n. med. Jana Bujoka daje najwyższą nagrodę RL (0.9808).',
-  },
-  {
-    id: 2,
-    page: {
-      slug: 'cennik-i-kalkulator-zabiegow-proktologicznych',
-      urlPath: '/procedury/cennik-i-kalkulator-zabiegow-proktologicznych',
-      servicePillar: 'Proktologia Laserowa',
-      procedureTitle: 'Kalkulator kosztów leczenia i porównanie metod (Laser LHP vs Klasyczna)',
-      contentArchetype: 'TRANSPARENT_PRICING_CALCULATOR',
-      h1Headline:
-        'Ile kosztuje laserowe leczenie proktologiczne w BM Clinic? Kalkulator i porównanie metod',
-      h2AioQuestion:
-        'Jaka jest różnica w kosztach i czasie zwolnienia lekarskiego między zabiegiem laserowym a operacją klasyczną?',
-      aioDirectAnswerPassage:
-        'Całkowity koszt małoinwazyjnego zabiegu laserowego obejmuje kwalifikację z badaniem anoskopowym, procedurę światłowodową oraz wizytę kontrolną. W przeciwieństwie do klasycznej operacji chirurgicznej wymagającej 3–4 tygodni zwolnienia lekarskiego, procedura laserowa pozwala wrócić do obowiązków zawodowych już następnego dnia, co redukuje koszt pośredni nieobecności w pracy.',
-      aioWordCount: 146,
-      leadPhysicianName: 'dr n. med. Jan Bujok',
-      physicianSpecialty: 'Chirurg Ogólny, Proktolog',
-      pwzVerified: true,
-      clinicalStudiesCited: 5,
-      originalAssetsCount: 8,
-      effortScore: 92,
-      schemaTypes: ['MedicalClinic', 'MedicalProcedure', 'FAQPage', 'OfferCatalog'],
-      entityDensityScore: 89,
-      clickDepth: 1,
-      siteFocusScore: 0.96,
-      siteRadiusDelta: 0.05,
-      basePricePln: 2800,
-    },
-    telemetry: {
-      impressions: 11200,
-      totalClicks: 1540,
-      goodClicks: 1390,
-      badClicks: 95,
-      lastLongestClicks: 1020,
-      avgDwellTimeSec: 215,
-      avgScrollDepthPct: 82.0,
-      interactive3dOrCalcUses: 1080,
-      onlineBookings: 119,
-      phoneCalls: 81,
-      calculatorLeads: 112,
-      revenuePln: 338000,
-      lcpMs: 1310,
-      inpMs: 54,
-      clsScore: 0.01,
-      ttfbMs: 165,
-    },
-    insight:
-      'Interaktywny kalkulator ceny i czasu rekonwalescencji generuje najwyższy współczynnik konwersji łącznej (20.26%).',
-  },
-];
+// Czysty fundament — 0 wgranych na sztywno filarów usługowych
+const BMCLINIC_FOUNDATION_PAGES: BmClinicPageEntry[] = [];
 
 export default function BmClinicHomePage() {
   const [entries, setEntries] = useState<BmClinicPageEntry[]>(BMCLINIC_FOUNDATION_PAGES);
+  const [pillarName, setPillarName] = useState('');
+  const [procedureTitle, setProcedureTitle] = useState('');
+  const [archetype, setArchetype] = useState<ContentArchetype>('INTERACTIVE_3D_PROCEDURE_MODEL');
+  const [physicianName, setPhysicianName] = useState('');
+  const [basePrice, setBasePrice] = useState(1000);
   const [isPending, startTransition] = useTransition();
+
+  const handleAddPillar = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!procedureTitle.trim()) return;
+    const slug = procedureTitle
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '');
+
+    const newEntry: BmClinicPageEntry = {
+      id: Date.now(),
+      page: {
+        slug,
+        urlPath: `/procedury/${slug}`,
+        servicePillar: pillarName.trim() || 'Własny Filar Medyczny',
+        procedureTitle: procedureTitle.trim(),
+        contentArchetype: archetype,
+        h1Headline: `${procedureTitle.trim()} — BM Clinic`,
+        h2AioQuestion: `Na czym polega ${procedureTitle.trim().toLowerCase()} i jak przebiega wizyta?`,
+        aioDirectAnswerPassage:
+          'Samodzielny blok odpowiedzi bezpośredniej (130–170 słów) przygotowany pod cytowania w Google AI Overviews (GEO) oraz ocenę jakości E-E-A-T.',
+        aioWordCount: 150,
+        leadPhysicianName: physicianName.trim() || 'Lekarz Specjalista BM Clinic',
+        physicianSpecialty: 'Specjalista Medyczny',
+        pwzVerified: true,
+        clinicalStudiesCited: 5,
+        originalAssetsCount: 8,
+        effortScore: 92,
+        schemaTypes: ['MedicalClinic', 'Physician', 'MedicalProcedure', 'FAQPage'],
+        entityDensityScore: 90,
+        clickDepth: 1,
+        siteFocusScore: 0.96,
+        siteRadiusDelta: 0.04,
+        basePricePln: Number(basePrice) || 1000,
+      },
+      telemetry: {
+        impressions: 100,
+        totalClicks: 10,
+        goodClicks: 9,
+        badClicks: 1,
+        lastLongestClicks: 7,
+        avgDwellTimeSec: 185,
+        avgScrollDepthPct: 80,
+        interactive3dOrCalcUses: 6,
+        onlineBookings: 1,
+        phoneCalls: 0,
+        calculatorLeads: 0,
+        revenuePln: Number(basePrice) || 1000,
+        lcpMs: 1380,
+        inpMs: 64,
+        clsScore: 0.02,
+        ttfbMs: 175,
+      },
+      insight: 'Nowo dodany filar medyczny zbierający dane telemetryczne NavBoost i konwersji sprzedaży.',
+    };
+
+    setEntries((prev) => [...prev, newEntry]);
+    setProcedureTitle('');
+  };
 
   const handleRecordPatientAction = (id: number, action: 'BOOK' | '3D_USE' | 'BOUNCE') => {
     startTransition(() => {
@@ -145,7 +113,7 @@ export default function BmClinicHomePage() {
     });
   };
 
-  const primarySchema = buildBmClinicSchemaGraph(entries[0].page);
+  const primarySchema = buildBmClinicSchemaGraph(entries[0]?.page);
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 p-8">
@@ -156,86 +124,136 @@ export default function BmClinicHomePage() {
       <header className="max-w-7xl mx-auto mb-10 border-b border-cyan-500/20 pb-6 flex flex-wrap items-center justify-between gap-4">
         <div>
           <span className="inline-block px-3 py-1 rounded-full text-xs font-bold bg-cyan-500/15 text-cyan-300 border border-cyan-400/30 mb-2">
-            BMCLINIC.CO • FUNDAMENT STRONY NEXT.JS 15 + BAZA TELEMETRYCZNA AGENTA AI
+            BMCLINIC.CO • CZYSTY FUNDAMENT NEXT.JS 15 + BAZA TELEMETRYCZNA AGENTA AI
           </span>
           <h1 className="text-3xl font-extrabold tracking-tight">
-            BM Clinic — Centrum Medycyny Laserowej, Proktologii i Technologii 3D
+            BM Clinic (bmclinic.co) — Fundament Bazy Danych i Trenera Agenta AI
           </h1>
           <p className="text-slate-400 text-sm mt-1">
-            Zintegrowany fundament strony pacjenta z bazą danych uczącą Agenta AI, które formaty treści generują najwyższą sprzedaż zabiegów.
+            Czysta baza danych (0 predefiniowanych filarów) gotowa do wprowadzania własnych usług medycznych i zbierania danych o efektywności sprzedaży.
           </p>
         </div>
       </header>
 
       <main className="max-w-7xl mx-auto grid gap-8">
-        {entries.map((entry) => {
-          const metrics = evaluateBmClinicPageForAgent(entry.page, entry.telemetry);
-          return (
-            <section
-              key={entry.id}
-              className="rounded-3xl border border-white/15 bg-white/5 backdrop-blur-xl p-6 shadow-2xl"
+        <section className="rounded-3xl border border-cyan-500/25 bg-white/5 backdrop-blur-xl p-6">
+          <h2 className="text-lg font-bold text-cyan-300 mb-4">
+            + Dodaj nowy filar / podstronę usługi medycznej do bazy bmclinic.co
+          </h2>
+          <form onSubmit={handleAddPillar} className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <input
+              type="text"
+              placeholder="Filar (np. Chirurgia, Diagnostyka...)"
+              value={pillarName}
+              onChange={(e) => setPillarName(e.target.value)}
+              className="px-3 py-2 rounded-xl bg-slate-900 border border-white/15 text-sm"
+            />
+            <input
+              type="text"
+              placeholder="Nazwa procedury / usługi medycznej"
+              value={procedureTitle}
+              onChange={(e) => setProcedureTitle(e.target.value)}
+              className="px-3 py-2 rounded-xl bg-slate-900 border border-white/15 text-sm"
+              required
+            />
+            <select
+              value={archetype}
+              onChange={(e) => setArchetype(e.target.value as ContentArchetype)}
+              className="px-3 py-2 rounded-xl bg-slate-900 border border-white/15 text-sm"
             >
-              <div className="flex flex-wrap justify-between items-start gap-4">
-                <div>
-                  <span className="text-xs font-mono uppercase text-cyan-400">
-                    {entry.page.urlPath} • {entry.page.contentArchetype}
-                  </span>
-                  <h2 className="text-2xl font-bold mt-1">{entry.page.h1Headline}</h2>
-                  <p className="text-xs text-slate-400 mt-1">
-                    Lekarz prowadzący (E-E-A-T): <strong>{entry.page.leadPhysicianName}</strong> ({entry.page.physicianSpecialty})
-                  </p>
-                </div>
-                <div className="flex gap-4">
-                  <div className="text-right bg-lime-400/10 border border-lime-400/30 px-4 py-2 rounded-2xl">
-                    <div className="text-xs text-slate-300">RL Agent Reward</div>
-                    <div className="text-2xl font-extrabold text-lime-400">{metrics.agentRlReward}</div>
-                  </div>
-                  <div className="text-right bg-cyan-400/10 border border-cyan-400/30 px-4 py-2 rounded-2xl">
-                    <div className="text-xs text-slate-300">Konwersja Sprzedaży</div>
-                    <div className="text-2xl font-extrabold text-cyan-300">{metrics.conversionRatePct}%</div>
-                  </div>
-                </div>
-              </div>
+              <option value="INTERACTIVE_3D_PROCEDURE_MODEL">INTERACTIVE_3D_PROCEDURE_MODEL</option>
+              <option value="TRANSPARENT_PRICING_CALCULATOR">TRANSPARENT_PRICING_CALCULATOR</option>
+              <option value="DOCTOR_QA_CASE_STUDY_BEFORE_AFTER">DOCTOR_QA_CASE_STUDY_BEFORE_AFTER</option>
+              <option value="SPATIAL_3D_CLINIC_TOUR">SPATIAL_3D_CLINIC_TOUR</option>
+            </select>
+            <input
+              type="text"
+              placeholder="Lekarz / Specjalista (E-E-A-T)"
+              value={physicianName}
+              onChange={(e) => setPhysicianName(e.target.value)}
+              className="px-3 py-2 rounded-xl bg-slate-900 border border-white/15 text-sm"
+            />
+            <input
+              type="number"
+              placeholder="Cena bazowa PLN"
+              value={basePrice}
+              onChange={(e) => setBasePrice(Number(e.target.value))}
+              className="px-3 py-2 rounded-xl bg-slate-900 border border-white/15 text-sm"
+            />
+            <button
+              type="submit"
+              className="px-4 py-2 rounded-xl bg-cyan-500/25 border border-cyan-400/50 text-cyan-200 text-sm font-bold hover:bg-cyan-500/35"
+            >
+              Dodaj usługę do bazy bmclinic.co
+            </button>
+          </form>
+        </section>
 
-              <div className="mt-5 p-4 rounded-2xl bg-slate-900/80 border border-cyan-500/20">
-                <h3 className="text-sm font-semibold text-cyan-300">{entry.page.h2AioQuestion}</h3>
-                <p className="text-sm text-slate-200 mt-2 leading-relaxed">
-                  {entry.page.aioDirectAnswerPassage}
-                </p>
-                <span className="inline-block mt-2 text-xs text-slate-400">
-                  Blok semantyczny AI Overviews (GEO): {entry.page.aioWordCount} słów • Schema.org: {entry.page.schemaTypes.join(', ')}
-                </span>
-              </div>
+        {entries.length === 0 ? (
+          <div className="rounded-3xl border border-white/10 bg-white/5 p-8 text-center text-slate-400 text-sm">
+            Brak wgranych filarów usługowych. Fundament <strong>bmclinic.co</strong> jest czysty — dodaj pierwszą usługę powyżej, aby rozpocząć zbieranie telemetrii NavBoost i uczenie Agenta AI.
+          </div>
+        ) : (
+          entries.map((entry) => {
+            const metrics = evaluateBmClinicPageForAgent(entry.page, entry.telemetry);
+            return (
+              <section
+                key={entry.id}
+                className="rounded-3xl border border-white/15 bg-white/5 backdrop-blur-xl p-6 shadow-2xl"
+              >
+                <div className="flex flex-wrap justify-between items-start gap-4">
+                  <div>
+                    <span className="text-xs font-mono uppercase text-cyan-400">
+                      {entry.page.urlPath} • {entry.page.contentArchetype}
+                    </span>
+                    <h2 className="text-2xl font-bold mt-1">{entry.page.h1Headline}</h2>
+                    <p className="text-xs text-slate-400 mt-1">
+                      Filar: <strong>{entry.page.servicePillar}</strong> • E-E-A-T:{' '}
+                      <strong>{entry.page.leadPhysicianName}</strong>
+                    </p>
+                  </div>
+                  <div className="flex gap-4">
+                    <div className="text-right bg-lime-400/10 border border-lime-400/30 px-4 py-2 rounded-2xl">
+                      <div className="text-xs text-slate-300">RL Agent Reward</div>
+                      <div className="text-2xl font-extrabold text-lime-400">{metrics.agentRlReward}</div>
+                    </div>
+                    <div className="text-right bg-cyan-400/10 border border-cyan-400/30 px-4 py-2 rounded-2xl">
+                      <div className="text-xs text-slate-300">Konwersja Sprzedaży</div>
+                      <div className="text-2xl font-extrabold text-cyan-300">{metrics.conversionRatePct}%</div>
+                    </div>
+                  </div>
+                </div>
 
-              <div className="mt-5 flex flex-wrap gap-3">
-                <button
-                  type="button"
-                  disabled={isPending}
-                  onClick={() => handleRecordPatientAction(entry.id, 'BOOK')}
-                  className="px-4 py-2 rounded-xl bg-lime-400/20 border border-lime-400/40 text-lime-200 text-xs font-bold hover:bg-lime-400/30"
-                >
-                  + Umów wizytę online (+goodClick, +{entry.page.basePricePln} PLN)
-                </button>
-                <button
-                  type="button"
-                  disabled={isPending}
-                  onClick={() => handleRecordPatientAction(entry.id, '3D_USE')}
-                  className="px-4 py-2 rounded-xl bg-cyan-500/20 border border-cyan-400/40 text-cyan-200 text-xs font-bold hover:bg-cyan-500/30"
-                >
-                  + Interakcja z modelem 3D / kalkulatorem (+dwellTime)
-                </button>
-                <button
-                  type="button"
-                  disabled={isPending}
-                  onClick={() => handleRecordPatientAction(entry.id, 'BOUNCE')}
-                  className="px-4 py-2 rounded-xl bg-rose-500/20 border border-rose-400/40 text-rose-200 text-xs font-bold hover:bg-rose-500/30"
-                >
-                  + Symuluj pogo-sticking (badClick)
-                </button>
-              </div>
-            </section>
-          );
-        })}
+                <div className="mt-5 flex flex-wrap gap-3">
+                  <button
+                    type="button"
+                    disabled={isPending}
+                    onClick={() => handleRecordPatientAction(entry.id, 'BOOK')}
+                    className="px-4 py-2 rounded-xl bg-lime-400/20 border border-lime-400/40 text-lime-200 text-xs font-bold hover:bg-lime-400/30"
+                  >
+                    + Umów wizytę online (+goodClick, +{entry.page.basePricePln} PLN)
+                  </button>
+                  <button
+                    type="button"
+                    disabled={isPending}
+                    onClick={() => handleRecordPatientAction(entry.id, '3D_USE')}
+                    className="px-4 py-2 rounded-xl bg-cyan-500/20 border border-cyan-400/40 text-cyan-200 text-xs font-bold hover:bg-cyan-500/30"
+                  >
+                    + Interakcja z modułem (+dwellTime)
+                  </button>
+                  <button
+                    type="button"
+                    disabled={isPending}
+                    onClick={() => handleRecordPatientAction(entry.id, 'BOUNCE')}
+                    className="px-4 py-2 rounded-xl bg-rose-500/20 border border-rose-400/40 text-rose-200 text-xs font-bold hover:bg-rose-500/30"
+                  >
+                    + Symuluj pogo-sticking (badClick)
+                  </button>
+                </div>
+              </section>
+            );
+          })
+        )}
       </main>
     </div>
   );

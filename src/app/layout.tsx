@@ -4,11 +4,11 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   metadataBase: new URL('https://bmclinic.co'),
   title: {
-    default: 'BM Clinic (bmclinic.co) — Centrum Medycyny Laserowej, Proktologii i Technologii 3D',
+    default: 'BM Clinic (bmclinic.co) — Fundament Strony i Bazy Danych Agenta AI',
     template: '%s | BM Clinic (bmclinic.co)',
   },
   description:
-    'Małoinwazyjna proktologia laserowa LHP (dr n. med. Jan Bujok), modelowanie sylwetki EMS EMT RF Sculpt oraz nawigacja przestrzenna 3D. Zabiegi 1 dnia w pełnej dyskrecji.',
+    'Fundament strony Next.js 15 z bazą telemetryczną Google Search (NavBoost, E-E-A-T, AI Overviews / GEO, Core Web Vitals) uczącą Agenta AI efektywności sprzedaży usług medycznych.',
   alternates: {
     canonical: 'https://bmclinic.co',
   },

@@ -1,5 +1,6 @@
 -- =============================================================================
 -- BMCLINIC.CO — BAZA DANYCH STRONY INTERNETOWEJ I TRENERA AGENTA AI
+-- Czysty fundament bez predefiniowanych filarów usługowych.
 -- Uwzględnia parametry:
 --   1. NavBoost / Craps (goodClicks, badClicks, lastLongestClicks, dwellTime)
 --   2. QualityBoost & PageRank_NS (siteAuthority, siteFocusScore, siteRadius, clickDepth)
@@ -16,20 +17,20 @@ CREATE TABLE IF NOT EXISTS medical_pages (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     slug TEXT NOT NULL UNIQUE,
     url_path TEXT NOT NULL UNIQUE,
-    service_pillar TEXT NOT NULL,            -- np. 'Proktologia Laserowa', 'Medycyna Estetyczna Hi-Tech', 'Komfort i Nawigacja 3D'
+    service_pillar TEXT NOT NULL,
     procedure_title TEXT NOT NULL,
-    content_archetype TEXT NOT NULL,         -- np. 'INTERACTIVE_3D_PROCEDURE_MODEL', 'TRANSPARENT_PRICING_CALCULATOR', 'DOCTOR_QA_CASE_STUDY_BEFORE_AFTER', 'SPATIAL_3D_CLINIC_TOUR'
+    content_archetype TEXT NOT NULL,
     h1_headline TEXT NOT NULL,
     h2_aio_question TEXT NOT NULL,           -- Pytanie H2 zoptymalizowane pod AI Overviews (GEO)
     aio_direct_answer_passage TEXT NOT NULL, -- Samodzielny blok semantyczny 130-170 słów
     aio_word_count INTEGER NOT NULL,
     
     -- E-E-A-T / YMYL
-    lead_physician_name TEXT NOT NULL,       -- np. 'dr n. med. Jan Bujok'
-    physician_specialty TEXT NOT NULL,       -- np. 'Chirurg Ogólny, Proktolog'
+    lead_physician_name TEXT NOT NULL,
+    physician_specialty TEXT NOT NULL,
     pwz_verified INTEGER DEFAULT 1,
     clinical_studies_cited INTEGER DEFAULT 5,
-    original_assets_count INTEGER DEFAULT 8, -- Autorskie zdjęcia, modele 3D, wideo z kliniki
+    original_assets_count INTEGER DEFAULT 8,
     effort_score REAL DEFAULT 92.0,
     
     -- Dane strukturalne i semantyka
@@ -41,7 +42,7 @@ CREATE TABLE IF NOT EXISTS medical_pages (
     site_focus_score REAL DEFAULT 0.96,
     site_radius_delta REAL DEFAULT 0.04,
     
-    base_price_pln INTEGER DEFAULT 2800,
+    base_price_pln INTEGER DEFAULT 0,
     created_at TEXT DEFAULT (datetime('now'))
 );
 

@@ -9,29 +9,34 @@ export interface BmClinicProcedureSchemaInput {
 }
 
 /**
- * Generuje pełny graf Schema.org JSON-LD (MedicalClinic + Physician + MedicalProcedure + FAQPage)
- * zoptymalizowany pod Google Search, AI Overviews (GEO) oraz YMYL / E-E-A-T dla domeny bmclinic.co.
+ * Generuje graf Schema.org JSON-LD dla domeny bmclinic.co.
+ * Gdy brak aktywnej podstrony zabiegowej (czysty fundament), zwraca bazowy graf MedicalClinic.
  */
-export function buildBmClinicSchemaGraph(input: BmClinicProcedureSchemaInput) {
+export function buildBmClinicSchemaGraph(input?: BmClinicProcedureSchemaInput) {
+  const baseClinic = {
+    '@type': 'MedicalClinic',
+    '@id': 'https://bmclinic.co/#clinic',
+    name: 'BM Clinic (bmclinic.co)',
+    url: 'https://bmclinic.co',
+    address: {
+      '@type': 'PostalAddress',
+      addressCountry: 'PL',
+    },
+  };
+
+  if (!input) {
+    return {
+      '@context': 'https://schema.org',
+      '@graph': [baseClinic],
+    };
+  }
+
   const canonicalUrl = `https://bmclinic.co${input.urlPath}`;
 
   return {
     '@context': 'https://schema.org',
     '@graph': [
-      {
-        '@type': 'MedicalClinic',
-        '@id': 'https://bmclinic.co/#clinic',
-        name: 'BM Clinic — Centrum Medycyny Laserowej i Proktologii',
-        url: 'https://bmclinic.co',
-        medicalSpecialty: ['Proctology', 'LaserSurgery', 'Dermatology'],
-        address: {
-          '@type': 'PostalAddress',
-          addressLocality: 'Warszawa',
-          addressRegion: 'Mazowieckie',
-          addressCountry: 'PL',
-        },
-        priceRange: '$$',
-      },
+      baseClinic,
       {
         '@type': 'Physician',
         '@id': 'https://bmclinic.co/#physician-lead',
