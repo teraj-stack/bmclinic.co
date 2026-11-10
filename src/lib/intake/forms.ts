@@ -5,6 +5,7 @@ export type IntakeField = {
   options?: readonly string[];
   required?: boolean;
   hint?: string;
+  quickAnswers?: readonly string[];
 };
 export type FormId =
   | "registration"
@@ -46,48 +47,98 @@ export const intakeForms: {
     id: "health",
     title: "Ankieta zdrowotna",
     description:
-      "Pomaga lekarzowi w rozmowie. Nie zastępuje badania ani kwalifikacji. Jeśli nie wiesz, wpisz „nie wiem”. Nie zmieniaj samodzielnie leków.",
+      "Kilka krótkich pytań przed wizytą lub drobnym zabiegiem. Możesz kliknąć gotową odpowiedź albo napisać własną. Niczego nie zaznaczamy za Ciebie. Nie musisz znać medycznych nazw — wątpliwości omówimy podczas wizyty. Nie zmieniaj samodzielnie leków.",
     fields: [
       {
         id: "healthReason",
         label: "Co Cię sprowadza i od kiedy występują dolegliwości?",
         type: "textarea",
+        quickAnswers: [
+          "Planowany drobny zabieg — bez dolegliwości",
+          "Konsultacja — opiszę podczas wizyty",
+        ],
+        hint: "Jeśli masz dolegliwości, opisz je własnymi słowami i podaj, od kiedy trwają. Możesz też wpisać nazwę planowanego zabiegu.",
       },
       {
         id: "healthConditions",
-        label: "Choroby przewlekłe, przebyte operacje i hospitalizacje",
+        label: "Choroby przewlekłe, przebyte operacje i pobyty w szpitalu",
         type: "textarea",
+        quickAnswers: [
+          "Nie choruję przewlekle i nie miałem operacji ani pobytów w szpitalu",
+          "Nie wiem — omówię z lekarzem",
+          "Wolę omówić z lekarzem",
+        ],
+        hint: "Jeżeli coś dotyczy Ciebie, podaj krótko co i kiedy, np. nadciśnienie leczone tabletką lub operacja wyrostka w dzieciństwie. Nie musisz pamiętać dokładnych dat. Kolczyka nie opisuj jako operacji — miejsce na takie informacje jest niżej.",
       },
       {
         id: "healthMedicines",
-        label: "Przyjmowane leki i suplementy wraz z dawkami",
+        label: "Czy przyjmujesz leki lub suplementy?",
         type: "textarea",
+        quickAnswers: [
+          "Nie przyjmuję leków ani suplementów",
+          "Nie pamiętam nazw — podam podczas wizyty",
+          "Wolę omówić z lekarzem",
+        ],
+        hint: "Uwzględnij także leki brane doraźnie i bez recepty. Jeśli przyjmujesz leki, wpisz nazwy i dawki, o ile je znasz. Nie odstawiaj ich samodzielnie.",
       },
       {
         id: "healthAllergies",
         label:
-          "Uczulenia i wcześniejsze reakcje na znieczulenie, leki lub opatrunki",
+          "Czy masz uczulenia lub miałeś reakcję na lek, znieczulenie albo opatrunek?",
         type: "textarea",
+        quickAnswers: [
+          "Nie znam u siebie uczuleń ani takich reakcji",
+          "Nie wiem — omówię z lekarzem",
+          "Wolę omówić z lekarzem",
+        ],
+        hint: "Jeżeli tak, napisz na co i co się wydarzyło, np. wysypka po leku lub podrażnienie po plastrze. Nie musisz samodzielnie rozstrzygać, czy była to alergia.",
       },
       {
         id: "healthClotting",
-        label: "Krwawienia, zaburzenia krzepnięcia, zakrzepica lub zatorowość",
+        label:
+          "Czy miałeś problemy z krzepnięciem, nadmiernym krwawieniem, zakrzepicę lub zatorowość?",
         type: "textarea",
+        quickAnswers: [
+          "Nie miałem takich problemów",
+          "Nie wiem — omówię z lekarzem",
+          "Wolę omówić z lekarzem",
+        ],
+        hint: "Jeśli rozpoznano u Ciebie zaburzenia krzepnięcia lub występowało trudne do zatrzymania krwawienie, napisz o tym. Zwykłego drobnego skaleczenia nie musisz opisywać.",
       },
       {
         id: "healthPregnancy",
-        label: "Ciąża, możliwość ciąży lub karmienie, jeżeli dotyczy",
+        label: "Ciąża, możliwość ciąży lub karmienie piersią — czy dotyczy?",
+        quickAnswers: [
+          "Nie dotyczy",
+          "Jestem w ciąży lub ciąża jest możliwa",
+          "Karmię piersią",
+          "Wolę omówić z lekarzem",
+        ],
+        hint: "Jeśli nie masz pewności, możesz napisać o tym lub omówić to z lekarzem.",
       },
       {
         id: "healthImplants",
         label:
-          "Implanty, urządzenia medyczne, wcześniejsze zabiegi i problemy z gojeniem",
+          "Implanty, urządzenia medyczne, kolczyki w okolicy zabiegu lub problemy z gojeniem",
         type: "textarea",
+        quickAnswers: [
+          "Nie mam nic do zgłoszenia w tym zakresie",
+          "Nie wiem, czy to istotne — omówię z lekarzem",
+          "Wolę omówić z lekarzem",
+        ],
+        hint: "Wpisz np. rozrusznik, implant, kolczyk lub świeże przekłucie w okolicy planowanego zabiegu. Podaj też wcześniejsze zabiegi w tej okolicy i problemy z gojeniem. Nie pytamy o listę wszystkich kolczyków, tatuaży ani wizyt kosmetycznych.",
       },
       {
         id: "healthOther",
-        label: "Infekcje, wyniki badań i inne ważne informacje",
+        label:
+          "Czy jest coś jeszcze, o czym lekarz powinien wiedzieć przed zabiegiem?",
         type: "textarea",
+        quickAnswers: [
+          "Nie mam nic do dodania",
+          "Nie wiem — omówię z lekarzem",
+          "Wolę omówić z lekarzem",
+        ],
+        hint: "Możesz podać np. obecną infekcję, gorączkę, zmianę skórną w miejscu zabiegu, rozpoznane zakażenie lub ważny wynik badania. Jeśli temat jest dla Ciebie prywatny, wybierz rozmowę z lekarzem.",
       },
     ],
   },
@@ -147,6 +198,10 @@ export const intakeForms: {
         id: "contactRestrictions",
         label: "Ograniczenia kontaktu lub szczególne potrzeby",
         type: "textarea",
+        quickAnswers: [
+          "Nie mam dodatkowych potrzeb",
+          "Wolę ustalić to podczas wizyty",
+        ],
       },
       {
         id: "documentsChannel",
@@ -233,7 +288,7 @@ export const intakeForms: {
     ],
   },
 ];
-export const FORM_VERSION = "patient-intake-2026-11-10-v1";
+export const FORM_VERSION = "patient-intake-2026-11-10-v2";
 export function parseFormIds(raw: unknown): FormId[] {
   if (
     !Array.isArray(raw) ||

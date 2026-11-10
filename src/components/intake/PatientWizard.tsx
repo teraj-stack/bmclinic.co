@@ -7,6 +7,7 @@ import {
   type FormId,
   parseAnswers,
 } from "@/lib/intake/forms";
+import IntakeFieldInput from "./IntakeFieldInput";
 import type { IntakePacket } from "@/lib/intake/store";
 type Packet = IntakePacket & {
   id: string;
@@ -357,38 +358,13 @@ export default function PatientWizard({ demo = false }: { demo?: boolean }) {
                 <p>{forms[step - 1]?.description}</p>
                 <div className="intake-fields">
                   {forms[step - 1]?.fields.map((field) => (
-                    <label key={field.id}>
-                      {field.label}
-                      {field.required ? " *" : ""}
-                      {field.type === "textarea" ? (
-                        <textarea
-                          rows={4}
-                          maxLength={2500}
-                          autoComplete="off"
-                          value={answers[field.id] ?? ""}
-                          onChange={(e) => update(field.id, e.target.value)}
-                        />
-                      ) : field.type === "choice" ? (
-                        <select
-                          value={answers[field.id] ?? ""}
-                          onChange={(e) => update(field.id, e.target.value)}
-                        >
-                          <option value="">Wybierz lub pozostaw puste</option>
-                          {field.options?.map((o) => (
-                            <option key={o}>{o}</option>
-                          ))}
-                        </select>
-                      ) : (
-                        <input
-                          type={field.type ?? "text"}
-                          maxLength={2500}
-                          autoComplete="off"
-                          value={answers[field.id] ?? ""}
-                          onChange={(e) => update(field.id, e.target.value)}
-                        />
-                      )}{" "}
-                      {field.hint && <small>{field.hint}</small>}
-                    </label>
+                    <IntakeFieldInput
+                      key={field.id}
+                      field={field}
+                      value={answers[field.id] ?? ""}
+                      disabled={busy}
+                      onChange={(value) => update(field.id, value)}
+                    />
                   ))}
                 </div>
               </>

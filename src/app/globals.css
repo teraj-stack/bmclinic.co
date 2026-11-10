@@ -940,3 +940,47 @@ textarea:focus {
     color: black;
   }
 }
+
+.intake-field > label {
+  display: block;
+  font-weight: 600;
+  margin: 0 0 8px;
+}
+.intake-field .field-hint {
+  color: #52615d;
+  font-size: 14px;
+  line-height: 1.55;
+  margin: 0 0 12px;
+}
+.quick-answers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 12px;
+}
+.intake-card .quick-answers button {
+  min-height: 44px;
+  padding: 10px 14px;
+  border: 1px solid #a6b4ae;
+  border-radius: 12px;
+  color: #28483e;
+  background: #f5f8f5;
+  font-size: 14px;
+  line-height: 1.45;
+  text-align: left;
+  white-space: normal;
+}
+.intake-card .quick-answers button[aria-pressed="true"] {
+  background: #28483e;
+  color: #fff;
+  border-color: #28483e;
+}
+.intake-card .quick-answers button:focus-visible {
+  outline: 3px solid #967a41;
+  outline-offset: 3px;
+}
+.intake-field input,
+.intake-field textarea,
+.intake-field select {
+  width: 100%;
+}

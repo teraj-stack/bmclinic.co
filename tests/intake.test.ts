@@ -124,3 +124,27 @@ test("packet pagination retains access to older records", () => {
     rmSync(dir, { recursive: true, force: true });
   }
 });
+test("quick answers remain explicit patient choices; uncertainty and custom details survive validation", async () => {
+  const { intakeForms } = await import("../src/lib/intake/forms");
+  const health = intakeForms.find((f) => f.id === "health")!;
+  assert.deepEqual(parseAnswers({}, ["registration", "health"], false), {});
+  for (const field of health.fields) {
+    assert.ok(field.quickAnswers?.length, field.id);
+    for (const answer of field.quickAnswers!)
+      assert.equal(
+        parseAnswers({ [field.id]: answer }, ["registration", "health"], false)[
+          field.id
+        ],
+        answer,
+      );
+  }
+  const custom = {
+    ...answers,
+    healthImplants: "Kolczyk w okolicy zabiegu — omówię z lekarzem",
+    healthAllergies: "Nie wiem — omówię z lekarzem",
+  };
+  assert.deepEqual(
+    parseAnswers(custom, ["registration", "health"], true),
+    custom,
+  );
+});

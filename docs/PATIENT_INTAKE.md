@@ -32,3 +32,7 @@ Strony i API pacjenta bez telemetrii, bez cache, z no-referrer/noindex i CSP. Od
 ## Weryfikacja
 
 `npm test`, `npm run build`, `python tests/intake_http_check.py` oraz dotychczasowy `python tests/http_check.py`. Testy używają wyłącznie syntetycznych danych i tymczasowych baz. Test HTTP sprawdza rzeczywisty serwer produkcyjny, MFA, CSRF, zużycie linku, zapis, konflikt wersji, blokadę po wysłaniu, odczyt przez personel, cofnięcie dostępu i nagłówki prywatności. Przegląd wizualny na rzeczywistych urządzeniach i integracja z docelowym EDM pozostają etapem uruchomienia.
+
+## Szybkie odpowiedzi (wersja formularza v2)
+
+Pytania wywiadu mają osobne, dobrowolne podpowiedzi do kliknięcia, pozostawiając edytowalną odpowiedź i możliwość omówienia sprawy z lekarzem. Nic nie jest zaznaczane domyślnie; brak odpowiedzi nie oznacza „nie”. Nie ma zbiorczego przycisku deklarującego zdrowie. Zastąpienie własnego tekstu podpowiedzią wymaga potwierdzenia. Pytanie o kolczyk dotyczy okolicy zabiegu i nie służy do odtwarzania domniemanego źródła zakażenia. Nowa wersja nie dodaje ankiety historii manicure, fryzjera ani tatuaży.
