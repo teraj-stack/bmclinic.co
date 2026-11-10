@@ -21,7 +21,7 @@ with tempfile.TemporaryDirectory() as tmp:
    else:raise RuntimeError('Production server did not start')
    for path in ['/','/proktologia','/proktologia/objawy','/flebologia','/flebologia/objawy','/chirurgia-ogolna','/medycyna-estetyczna','/kontakt','/rezerwacja','/admin','/robots.txt','/sitemap.xml']:
     status,_,_=req(path);assert status==200,(path,status)
-   assert 'Szukasz konkretnego leczenia?' in req('/proktologia')[1]
+   assert 'Chcę w końcu mieć to za sobą.' in req('/proktologia')[1]
    assert 'Chcę usunąć pajączki' in req('/flebologia')[1]
    assert 'Czytelna lista' in req('/proktologia/objawy')[1]
    assert 'Dotyczy mnie' in req('/flebologia/objawy')[1]

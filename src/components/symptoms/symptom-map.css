@@ -921,3 +921,35 @@
   color: var(--tn-muted);
   line-height: 1.7;
 }
+.treatment-contact-now {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin: 24px 0;
+}
+.treatment-contact-now > p {
+  font-size: 14px;
+  line-height: 1.6;
+  max-width: 48ch;
+  color: var(--tn-muted);
+}
+.treatment-urgent-top {
+  margin: 14px 0 24px;
+  padding: 14px 18px;
+  border: 1px solid var(--tn-line);
+  border-radius: 10px;
+}
+.treatment-first-time {
+  padding: 24px;
+  border: 1px solid var(--tn-line);
+  border-radius: 12px;
+  margin: 28px 0;
+}
+.treatment-first-time h3 {
+  font-size: 25px;
+  margin: 0 0 16px;
+}
+.treatment-first-time p {
+  line-height: 1.7;
+}

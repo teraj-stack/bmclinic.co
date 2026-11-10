@@ -20,18 +20,46 @@ export default function TreatmentNavigator({
       aria-labelledby={id + "-title"}
     >
       <p className="treatment-eyebrow">
-        BM CLINIC · MOŻLIWOŚCI LECZENIA ZABIEGOWEGO
+        {specialty === "proktologia"
+          ? "BM CLINIC · POROZMAWIAJMY O TYM, CO PRZEŻYWASZ"
+          : "BM CLINIC · MOŻLIWOŚCI LECZENIA ZABIEGOWEGO"}
       </p>
       <h2 id={id + "-title"}>
         {specialty === "flebologia"
           ? "To, co Ci przeszkadza, ma znaczenie."
-          : "Szukasz konkretnego leczenia?"}
+          : "Chcę w końcu mieć to za sobą."}
       </h2>
       <p className="treatment-lead">
         {specialty === "flebologia"
           ? "Drobne naczynka, widoczne żyły, zmiany po wcześniejszym leczeniu. Możesz chcieć coś zmienić — także wtedy, gdy nic nie boli. Porozmawiajmy o możliwościach i realnym planie."
-          : "Konsultacja może być kolejnym krokiem do zaplanowania zabiegu. Zacznij od tego, czego potrzebujesz; szczegóły objawów uporządkujemy wspólnie."}
+          : "Kolejna toaleta, znowu ból, krew albo coś, co wychodzi na zewnątrz. Jeśli masz dość tego, jak dolegliwości wpływają na Twoje życie, możesz zacząć od rozmowy. Nie musisz znać nazwy choroby ani zabiegu."}
       </p>
+      {specialty === "proktologia" && (
+        <>
+          <div className="treatment-contact-now">
+            {demo ? (
+              <p className="treatment-demo-cta">
+                <strong>Zapytaj o najbliższy termin konsultacji</strong>
+                <br />W działającej stronie ten przycisk prowadzi do kontaktu z
+                kliniką. Ten podgląd nie przyjmuje zgłoszeń.
+              </p>
+            ) : (
+              <a className="button" href="/proktologia/kontakt">
+                Zapytaj o najbliższy termin konsultacji →
+              </a>
+            )}
+            <p>
+              Nie musisz najpierw wybierać zabiegu. Możesz powiedzieć, że się
+              boisz i chcesz omówić możliwości.
+            </p>
+          </div>
+          <aside className="treatment-urgent treatment-urgent-top">
+            Jeśli krwawienie jest obfite lub nie ustępuje, występuje omdlenie
+            albo znaczne osłabienie, nie czekaj na planowy termin. Potrzebna
+            jest natychmiastowa pomoc; w zagrożeniu życia dzwoń pod 112 lub 999.
+          </aside>
+        </>
+      )}
       <div className="treatment-goals">
         {options.map((option, index) => (
           <button
@@ -83,7 +111,14 @@ export default function TreatmentNavigator({
               rezerwacji.
             </p>
           ) : (
-            <a className="button" href={"/" + specialty + "/rezerwacja"}>
+            <a
+              className="button"
+              href={
+                "/" +
+                specialty +
+                (specialty === "proktologia" ? "/kontakt" : "/rezerwacja")
+              }
+            >
               {active.cta} →
             </a>
           )}
@@ -93,13 +128,33 @@ export default function TreatmentNavigator({
           </p>
         </div>
       )}
+      {specialty === "proktologia" && (
+        <section className="treatment-first-time">
+          <h3>To zdarzyło się pierwszy raz?</h3>
+          <p>
+            Nie wiesz, co to może być ani jak to opisać? Możesz zacząć od mapy
+            objawów lub od konsultacji. Krwawienia nie przypisujemy
+            automatycznie hemoroidom.
+          </p>
+          {demo ? (
+            <p className="treatment-fine">
+              Mapę otworzysz przyciskiem „Pokaż mapę objawów” w górnym pasku
+              demonstracji.
+            </p>
+          ) : (
+            <a className="button" href="/proktologia/objawy">
+              Pomóż mi nazwać i uporządkować objawy →
+            </a>
+          )}
+        </section>
+      )}
       <div className="treatment-principles">
         <section>
           <h3>Metoda dobrana do Ciebie</h3>
           <p>
-            Rozmawiamy o problemie i oczekiwaniach, następnie dobieramy
-            postępowanie. Sam wybór lasera lub nazwy procedury nie zastępuje
-            kwalifikacji.
+            {specialty === "proktologia"
+              ? "Zaczynamy od tego, co się dzieje i jak wpływa to na Twoje życie. Po rozmowie i badaniu wyjaśnimy, jakie leczenie można zaproponować w Twojej sytuacji."
+              : "Rozmawiamy o problemie i oczekiwaniach, następnie dobieramy postępowanie. Sam wybór lasera lub nazwy procedury nie zastępuje kwalifikacji."}
           </p>
         </section>
         <section>
@@ -118,12 +173,13 @@ export default function TreatmentNavigator({
           Ustalimy też, jak zgłaszać dyskomfort podczas leczenia.
         </p>
       </section>
-      <aside className="treatment-urgent">
-        {specialty === "flebologia"
-          ? "Nowy jednostronny obrzęk lub ból nogi wymaga pilnej oceny. Nagła duszność, ból w klatce piersiowej lub omdlenie: 112 lub 999."
-          : "Obfite lub nieustępujące krwawienie, omdlenie lub znaczne osłabienie wymaga natychmiastowej pomocy. W zagrożeniu życia: 112 lub 999."}{" "}
-        Nie czekaj wtedy na planowy termin.
-      </aside>
+      {specialty === "flebologia" && (
+        <aside className="treatment-urgent">
+          Nowy jednostronny obrzęk lub ból nogi wymaga pilnej oceny. Nagła
+          duszność, ból w klatce piersiowej lub omdlenie: 112 lub 999. Nie
+          czekaj wtedy na planowy termin.
+        </aside>
+      )}
     </section>
   );
 }

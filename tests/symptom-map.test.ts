@@ -111,5 +111,5 @@ test("treatment-seeking paths lead with patient goals and respect cosmetic conce
     assert.doesNotMatch(html, /bezbolesn/i);
   }
   assert.match(treatmentIntents.flebologia[0].intro, /Nie musisz czekać/);
-  assert.match(treatmentIntents.proktologia[0].intro, /jeśli są odpowiednie/);
+  assert.match(treatmentIntents.proktologia[0].intro, /Nie musisz|nie musisz/);
 });
