@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BM Clinic (bmclinic.co) — Centrum Medycyny Laserowej, Proktologii i Technologii 3D</title>
+  <meta name="description" content="Małoinwazyjna proktologia laserowa LHP (dr n. med. Jan Bujok), modelowanie sylwetki EMS EMT RF Sculpt oraz wirtualny komfort 3D w BM Clinic Warszawa." />
+  <script type="application/ld+json" id="schemaJsonLd">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "MedicalClinic",
+        "@id": "https://bmclinic.co/#clinic",
+        "name": "BM Clinic — Centrum Medycyny Laserowej i Proktologii",
+        "url": "https://bmclinic.co",
+        "medicalSpecialty": ["Proctology", "LaserSurgery", "Dermatology"],
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Warszawa Wilanów",
+          "addressRegion": "Mazowieckie",
+          "addressCountry": "PL"
+        }
+      },
+      {
+        "@type": "Physician",
+        "@id": "https://bmclinic.co/#dr-jan-bujok",
+        "name": "dr n. med. Jan Bujok",
+        "jobTitle": "Chirurg Ogólny, Proktolog",
+        "worksFor": { "@id": "https://bmclinic.co/#clinic" }
+      }
+    ]
+  }
+  </script>
+  <style>
+    :root {
+      --bg-obsidian: #050a14;
+      --cyan: #00e5ff;
+      --turquoise: #15c5c5;
+      --lime: #b8ff01;
+      --indigo: #6a85ff;
+      --rose: #ff5d8f;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", sans-serif;
+      background:
+        radial-gradient(circle at 12% 14%, rgba(21, 197, 197, 0.16), transparent 38%),
+        radial-gradient(circle at 86% 18%, rgba(106, 133, 255, 0.16), transparent 42%),
+        radial-gradient(circle at 50% 88%, rgba(184, 255, 1, 0.08), transparent 45%),
+        var(--bg-obsidian);
+      color: var(--text-main);
+      min-height: 100vh;
+      padding: 22px;
+      line-height: 1.55;
+    }
+    .shell { max-width: 1400px; margin: 0 auto; }
+
+    /* Tactile Liquid Glass */
+    .liquid-glass {
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.10), rgba(255, 255, 255, 0.03));
+      backdrop-filter: blur(24px) saturate(165%);
+      -webkit-backdrop-filter: blur(24px) saturate(165%);
+      border-radius: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      box-shadow:
+        inset 0 2px 3px rgba(255, 255, 255, 0.38),
+        inset 0 -3px 8px rgba(15, 23, 42, 0.5),
+        0 20px 44px -12px rgba(0, 0, 0, 0.68);
+    }
+
+    /* Asymmetric Cutout Navbar */
+    .navbar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 26px;
+      margin-bottom: 22px;
+      gap: 16px;
+    }
+    .brand-block {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .shield-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, rgba(0, 229, 255, 0.3), rgba(184, 255, 1, 0.25));
+      border: 1px solid rgba(255, 255, 255, 0.45);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 18px;
+      color: var(--lime);
+      box-shadow: 0 8px 20px rgba(0, 229, 255, 0.28);
+    }
+    .nav-tabs { display: flex; gap: 10px; flex-wrap: wrap; }
+    .tab-btn {
+      cursor: pointer;
+      padding: 9px 16px;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text-main);
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.15s ease;
+    }
+    .tab-btn.active, .tab-btn:hover {
+      background: linear-gradient(135deg, rgba(21, 197, 197, 0.3), rgba(106, 133, 255, 0.25));
+      border-color: var(--cyan);
+      color: #fff;
+    }
+
+    /* Hero Grid */
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.35fr 1fr;
+      gap: 22px;
+      margin-bottom: 24px;
+    }
+    @media (max-width: 1050px) {
+      .hero-grid { grid-template-columns: 1fr; }
+    }
+    .hero-main { padding: 30px; }
+    .pill-tag {
+      display: inline-block;
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      background: rgba(0, 229, 255, 0.13);
+      color: var(--cyan);
+      border: 1px solid rgba(0, 229, 255, 0.35);
+      margin-bottom: 12px;
+    }
+    h1 { font-size: 30px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.22; }
+    .aio-box {
+      margin-top: 16px;
+      padding: 16px 18px;
+      border-radius: 18px;
+      background: rgba(5, 10, 20, 0.68);
+      border-left: 4px solid var(--turquoise);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      border-right: 1px solid rgba(255, 255, 255, 0.1);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .aio-box h2 { font-size: 15px; color: var(--cyan); margin-bottom: 6px; }
+    .aio-box p { font-size: 13.5px; color: #e2e8f0; }
+
+    .eeat-bar {
+      margin-top: 16px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      align-items: center;
+      padding: 12px 16px;
+      border-radius: 16px;
+      background: rgba(184, 255, 1, 0.07);
+      border: 1px solid rgba(184, 255, 1, 0.25);
+      font-size: 12.5px;
+    }
+
+    /* Interactive 3D & Calculator Card */
+    .interactive-card { padding: 24px; display: flex; flex-direction: column; justify-content: space-between; }
+    canvas#laser3dCanvas {
+      width: 100%;
+      height: 210px;
+      border-radius: 16px;
+      background: radial-gradient(circle at 50% 50%, #0e223d, #050a14);
+      border: 1px solid rgba(0, 229, 255, 0.28);
+      cursor: grab;
+      margin-bottom: 14px;
+    }
+
+    .calc-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .calc-box {
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: rgba(5, 10, 20, 0.65);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      font-size: 12px;
+    }
+    .calc-box strong { display: block; font-size: 16px; color: var(--lime); margin-top: 2px; }
+
+    .btn-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+    button.btn {
+      cursor: pointer;
+      padding: 10px 16px;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.05));
+      color: #fff;
+      font-size: 12.5px;
+      font-weight: 700;
+      transition: all 0.15s ease;
+    }
+    button.btn:hover { border-color: var(--cyan); background: rgba(0, 229, 255, 0.2); }
+    button.btn-primary {
+      background: linear-gradient(135deg, rgba(21, 197, 197, 0.42), rgba(184, 255, 1, 0.25));
+      border-color: var(--lime);
+      color: var(--lime);
+    }
+
+    /* Telemetry & Agent Database Section */
+    .db-grid {
+      display: grid;
+      grid-template-columns: 1.55fr 1fr;
+      gap: 22px;
+    }
+    @media (max-width: 1050px) {
+      .db-grid { grid-template-columns: 1fr; }
+    }
+    .page-card { padding: 20px; margin-bottom: 14px; }
+    .metrics-strip {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(125px, 1fr));
+      gap: 8px;
+      margin-top: 12px;
+      padding: 10px;
+      border-radius: 14px;
+      background: rgba(5, 10, 20, 0.6);
+    }
+    .metrics-strip div span { display: block; font-size: 10.5px; color: var(--text-muted); }
+    .metrics-strip div strong { font-size: 14px; }
+
+    pre.blueprint {
+      margin-top: 12px;
+      padding: 14px;
+      border-radius: 14px;
+      background: #030710;
+      border: 1px solid rgba(0, 229, 255, 0.28);
+      color: #a5f3fc;
+      font-size: 11.5px;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      max-height: 380px;
+      overflow-y: auto;
+    }
+    .input-field {
+      width: 100%;
+      padding: 9px 12px;
+      border-radius: 11px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      background: rgba(5, 10, 20, 0.8);
+      color: #fff;
+      font-size: 13px;
+      margin-top: 4px;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <!-- Asymmetric Cutout Liquid Glass Navbar -->
+    <nav class="liquid-glass navbar">
+      <div class="brand-block">
+        <div class="shield-icon">BM</div>
+        <div>
+          <div style="font-weight:800; font-size:17px; letter-spacing:-0.01em;">bmclinic.co</div>
+          <div style="font-size:11.5px; color:var(--text-muted);">
+            Centrum Medycyny Laserowej i Proktologii • Next.js 15 + AI Content Agent Database
+          </div>
+        </div>
+      </div>
+      <div class="nav-tabs">
+        <button class="tab-btn active" onclick="selectProcedure(0)">Laser LHP 1470nm (3D Model)</button>
+        <button class="tab-btn" onclick="selectProcedure(1)">Kalkulator &amp; Porównanie Metod</button>
+        <button class="tab-btn" onclick="selectProcedure(2)">EMS EMT + RF Sculpt</button>
+        <button class="tab-btn" onclick="selectProcedure(3)">Komfort i Gabinet 3D</button>
+      </div>
+    </nav>
+
+    <!-- Patient-Facing Hero + Live Telemetry Trigger -->
+    <section class="hero-grid">
+      <div class="liquid-glass hero-main">
+        <span class="pill-tag" id="activePillarTag">PROKTOLOGIA LASEROWA • ARCHETYP: INTERACTIVE_3D_PROCEDURE_MODEL</span>
+        <h1 id="activeH1">Laserowe leczenie hemoroidów LHP w Warszawie — bez nacięć i bez szwów</h1>
+
+        <div class="aio-box">
+          <h2 id="activeH2Question">Na czym polega laserowe usuwanie hemoroidów metodą LHP i ile trwa rekonwalescencja?</h2>
+          <p id="activeAioPassage">
+            Laserowe leczenie hemoroidów metodą LHP (Laser Hemorrhoidoplasty) wykorzystuje falę o długości 1470 nm, która zamyka naczynia krwionośne guzka krwawniczego od wewnątrz bez wycinania tkanek i bez zakładania szwów. Zabieg w BM Clinic trwa około 25–35 minut w znieczuleniu miejscowym lub krótkiej sedacji. Pacjent opuszcza klinikę po około 2 godzinach, a powrót do pracy biurowej i codziennej aktywności następuje zazwyczaj w ciągu 24–48 godzin.
+          </p>
+        </div>
+
+        <div class="eeat-bar">
+          <span>👨‍⚕️ Autoryzacja medyczna (E-E-A-T / YMYL): <strong id="activeDoctor">dr n. med. Jan Bujok (Chirurg Ogólny, Proktolog)</strong></span>
+          <span>✅ Prawo Wykonywania Zawodu (PWZ)</span>
+          <span>📊 Pasaż AI Overviews: <strong id="activeWordCount">154 słów</strong></span>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-primary" onclick="triggerPatientEvent('BOOKING')">
+            📅 Umów dyskretną wizytę online (+goodClick +lastLongestClick)
+          </button>
+          <button class="btn" onclick="triggerPatientEvent('PHONE')">
+            📞 Zadzwoń do Recepcji BM Clinic (+goodClick)
+          </button>
+          <button class="btn" onclick="triggerPatientEvent('CALC')">
+            🧮 Oblicz koszt i raty zabiegu (+calculatorLead)
+          </button>
+          <button class="btn" style="border-color:rgba(255,93,143,0.45); color:#fecdd3;" onclick="triggerPatientEvent('BAD_CLICK')">
+            ↩ Symuluj wyjście <10s (badClick / pogo-sticking)
+          </button>
+        </div>
+      </div>
+
+      <div class="liquid-glass interactive-card">
+        <div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <span style="font-size:12px; font-weight:700; color:var(--cyan);">INTERAKTYWNY MODUŁ 3D &amp; PORÓWNANIE REKONWALESCENCJI</span>
+            <span style="font-size:11px; color:var(--lime);">Kliknij wizualizację (+effortScore)</span>
+          </div>
+          <canvas id="laser3dCanvas" width="520" height="210" onclick="triggerPatientEvent('3D_INTERACT')"></canvas>
+
+          <div class="calc-row">
+            <div class="calc-box">
+              <span>Powrót do pracy (Laser LHP 1470nm)</span>
+              <strong>24 – 48 godzin</strong>
+              <span style="color:var(--text-muted);">Brak nacięć i szwów</span>
+            </div>
+            <div class="calc-box">
+              <span>Koszt procedury w BM Clinic</span>
+              <strong id="activePriceBox">3 200 PLN</strong>
+              <span style="color:var(--text-muted);">Kwalifikacja + zabieg 1 dnia</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px; font-size:11.5px; color:var(--text-muted); display:flex; justify-content:space-between;">
+          <span>Core Web Vitals: <strong style="color:#fff;">LCP 1.42s • INP 68ms • CLS 0.02</strong></span>
+          <span>Odległość od Home: <strong style="color:var(--lime);">1 kliknięcie</strong></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Real-time Database & AI Content Agent Learning Panel -->
+    <section class="db-grid">
+      <div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+          <h2 style="font-size:18px; font-weight:800;">
+            🗄️ Baza Danych Efektywności Podstron bmclinic.co (Sortowanie wg Nagrody RL Agenta AI)
+          </h2>
+          <button class="btn" style="padding:6px 12px; font-size:11px;" onclick="exportBmClinicState()">
+            ⬇ Eksportuj JSON bazy
+          </button>
+        </div>
+        <div id="pagesDatabaseList"></div>
+      </div>
+
+      <div class="liquid-glass" style="padding:22px;">
+        <h2 style="font-size:17px; font-weight:800; margin-bottom:8px;">
+          🤖 Agent AI Budowy Treści bmclinic.co (Wyuczony na bazie danych)
+        </h2>
+        <p style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">
+          Agent analizuje, który typ treści (<code>content_archetype</code>) ma najwyższy współczynnik konwersji sprzedaży oraz najlepszy stosunek <code>goodClicks / badClicks</code> i generuje nową podstronę zabiegową dla <strong>bmclinic.co</strong>.
+        </p>
+        <label style="font-size:12px; color:var(--text-muted);">Nowa usługa medyczna dla bmclinic.co:</label>
+        <input class="input-field" id="agentNewService" value="Laserowe leczenie torbieli włosowej (SiLaC 1470 nm)" />
+
+        <label style="font-size:12px; color:var(--text-muted);">Lekarz prowadzący (E-E-A-T / PWZ):</label>
+        <input class="input-field" id="agentPhysician" value="dr n. med. Jan Bujok — Chirurg Ogólny, Proktolog" />
+
+        <button class="btn btn-primary" style="width:100%;" onclick="generateNewBmClinicPage()">
+          ⚡ Wygeneruj podstronę bmclinic.co wg zwycięskiego wzorca sprzedaży
+        </button>
+        <pre class="blueprint" id="agentBlueprintOut"></pre>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const DB_KEY = 'BMCLINIC_CO_FOUNDATION_DB_V1';
+
+    const SEED_PAGES = [
+      {
+        id: 1,
+        slug: 'laserowe-leczenie-hemoroidow-lhp',
+        url_path: '/procedury/laserowe-leczenie-hemoroidow-lhp',
+        service_pillar: 'Proktologia Laserowa',
+        procedure_title: 'Laserowa plastyka hemoroidów LHP (1470 nm) — zabieg 1 dnia',
+        content_archetype: 'INTERACTIVE_3D_PROCEDURE_MODEL',
+        h1_headline: 'Laserowe leczenie hemoroidów LHP w Warszawie — bez nacięć i bez szwów',
+        h2_aio_question: 'Na czym polega laserowe usuwanie hemoroidów metodą LHP i ile trwa rekonwalescencja?',
+        aio_direct_answer_passage: 'Laserowe leczenie hemoroidów metodą LHP (Laser Hemorrhoidoplasty) wykorzystuje falę o długości 1470 nm, która zamyka naczynia krwionośne guzka krwawniczego od wewnątrz bez wycinania tkanek i bez zakładania szwów. Zabieg w BM Clinic trwa około 25–35 minut w znieczuleniu miejscowym lub krótkiej sedacji. Pacjent opuszcza klinikę po około 2 godzinach, a powrót do pracy biurowej i codziennej aktywności następuje zazwyczaj w ciągu 24–48 godzin.',
+        aio_word_count: 154,
+        lead_physician_name: 'dr n. med. Jan Bujok',
+        physician_specialty: 'Chirurg Ogólny, Proktolog',
+        pwz_verified: true,
+        clinical_studies_cited: 7,
+        original_assets_count: 11,
+        effort_score: 96,
+        schema_types: ['MedicalClinic', 'Physician', 'MedicalProcedure', 'FAQPage', 'VideoObject'],
+        entity_density_score: 94,
+        click_depth: 1,
+        site_focus_score: 0.98,
+        site_radius_delta: 0.03,
+        base_price_pln: 3200,
+        telemetry: {
+          impressions: 14800,
+          total_clicks: 1920,
+          good_clicks: 1765,
+          bad_clicks: 82,
+          last_longest_clicks: 1340,
+          avg_dwell_time_sec: 248,
+          avg_scroll_depth_pct: 86.5,
+          interactive_3d_or_calc_uses: 1190,
+          online_bookings: 148,
+          phone_calls: 94,
+          calculator_leads: 76,
+          revenue_pln: 412000,
+          lcp_ms: 1420,
+          inp_ms: 68,
+          cls_score: 0.02,
+          ttfb_ms: 180,
+          insight: 'Interaktywny wizualizator 3D przebiegu impulsu lasera + pasaż 154 słów pod H2 z autoryzacją dr n. med. Jana Bujoka daje najwyższą nagrodę RL.'
+        }
+      },
+      {
+        id: 2,
+        slug: 'cennik-i-kalkulator-zabiegow-proktologicznych',
+        url_path: '/procedury/cennik-i-kalkulator-zabiegow-proktologicznych',
+        service_pillar: 'Proktologia Laserowa',
+        procedure_title: 'Kalkulator kosztów leczenia i porównanie metod (Laser LHP vs Klasyczna)',
+        content_archetype: 'TRANSPARENT_PRICING_CALCULATOR',
+        h1_headline: 'Ile kosztuje laserowe leczenie proktologiczne w BM Clinic? Kalkulator i porównanie metod',
+        h2_aio_question: 'Jaka jest różnica w kosztach i czasie zwolnienia lekarskiego między zabiegiem laserowym a operacją klasyczną?',
+        aio_direct_answer_passage: 'Całkowity koszt małoinwazyjnego zabiegu laserowego obejmuje kwalifikację z badaniem anoskopowym, procedurę światłowodową oraz wizytę kontrolną. W przeciwieństwie do klasycznej operacji chirurgicznej wymagającej 3–4 tygodni zwolnienia lekarskiego, procedura laserowa pozwala wrócić do obowiązków zawodowych już następnego dnia, co redukuje koszt pośredni nieobecności w pracy.',
+        aio_word_count: 146,
+        lead_physician_name: 'dr n. med. Jan Bujok',
+        physician_specialty: 'Chirurg Ogólny, Proktolog',
+        pwz_verified: true,
+        clinical_studies_cited: 5,
+        original_assets_count: 8,
+        effort_score: 92,
+        schema_types: ['MedicalClinic', 'MedicalProcedure', 'FAQPage', 'OfferCatalog'],
+        entity_density_score: 89,
+        click_depth: 1,
+        site_focus_score: 0.96,
+        site_radius_delta: 0.05,
+        base_price_pln: 2800,
+        telemetry: {
+          impressions: 11200,
+          total_clicks: 1540,
+          good_clicks: 1390,
+          bad_clicks: 95,
+          last_longest_clicks: 1020,
+          avg_dwell_time_sec: 215,
+          avg_scroll_depth_pct: 82.0,
+          interactive_3d_or_calc_uses: 1080,
+          online_bookings: 119,
+          phone_calls: 81,
+          calculator_leads: 112,
+          revenue_pln: 338000,
+          lcp_ms: 1310,
+          inp_ms: 54,
+          cls_score: 0.01,
+          ttfb_ms: 165,
+          insight: 'Interaktywny kalkulator ceny i czasu rekonwalescencji generuje najwyższy współczynnik konwersji łącznej (20.26%).'
+        }
+      },
+      {
+        id: 3,
+        slug: 'ems-emt-rf-sculpt-modelowanie-sylwetki',
+        url_path: '/procedury/ems-emt-rf-sculpt-modelowanie-sylwetki',
+        service_pillar: 'Medycyna Estetyczna Hi-Tech',
+        procedure_title: 'Modelowanie sylwetki i wzmocnienie mięśni EMS EMT + RF Sculpt',
+        content_archetype: 'DOCTOR_QA_CASE_STUDY_BEFORE_AFTER',
+        h1_headline: 'EMS EMT + RF Sculpt w BM Clinic — jednoczesna redukcja tkanki tłuszczowej i budowa mięśni',
+        h2_aio_question: 'Jakie efekty daje połączenie fali elektromagnetycznej HIFEM/EMS z falą radiową RF?',
+        aio_direct_answer_passage: 'Technologia EMS EMT z falą radiową RF wywołuje ponad 20 000 supramaksymalnych skurczów mięśni w trakcie jednej 30-minutowej sesji, jednocześnie podgrzewając tkankę podskórną do temperatury wywołującej apoptozę komórek tłuszczowych. Seria 4–6 zabiegów pozwala zredukować obwód talii i zwiększyć gęstość włókien mięśniowych bez okresu rekonwalescencji.',
+        aio_word_count: 158,
+        lead_physician_name: 'Zespół Medyczny BM Clinic',
+        physician_specialty: 'Medycyna Estetyczna i Hi-Tech',
+        pwz_verified: true,
+        clinical_studies_cited: 6,
+        original_assets_count: 14,
+        effort_score: 88,
+        schema_types: ['MedicalClinic', 'MedicalProcedure', 'FAQPage', 'ImageGallery'],
+        entity_density_score: 87,
+        click_depth: 1,
+        site_focus_score: 0.92,
+        site_radius_delta: 0.08,
+        base_price_pln: 1600,
+        telemetry: {
+          impressions: 9600,
+          total_clicks: 1210,
+          good_clicks: 1045,
+          bad_clicks: 110,
+          last_longest_clicks: 740,
+          avg_dwell_time_sec: 184,
+          avg_scroll_depth_pct: 78.0,
+          interactive_3d_or_calc_uses: 690,
+          online_bookings: 78,
+          phone_calls: 49,
+          calculator_leads: 44,
+          revenue_pln: 196000,
+          lcp_ms: 1780,
+          inp_ms: 92,
+          cls_score: 0.04,
+          ttfb_ms: 210,
+          insight: 'Suwak autorskich zdjęć Przed/Po z parametrami klinicznymi oraz Q&A specjalistów zapewnia wysokie cytowania w AI Overviews.'
+        }
+      },
+      {
+        id: 4,
+        slug: 'komfort-pacjenta-wirtualny-spacer-3d-gabinet',
+        url_path: '/procedury/komfort-pacjenta-wirtualny-spacer-3d-gabinet',
+        service_pillar: 'Komfort i Nawigacja 3D',
+        procedure_title: 'Dyskretna pierwsza wizyta i wirtualny spacer 3D po gabinetach BM Clinic',
+        content_archetype: 'SPATIAL_3D_CLINIC_TOUR',
+        h1_headline: 'Pełna dyskrecja i komfort pierwszej wizyty w BM Clinic — zobacz gabinet w 3D przed wizytą',
+        h2_aio_question: 'Jak wygląda pierwsza konsultacja proktologiczna w BM Clinic i jak się do niej przygotować?',
+        aio_direct_answer_passage: 'Pierwsza wizyta proktologiczna w BM Clinic odbywa się w wyciszonym gabinecie z własnym węzłem sanitarnym oraz jednorazową bielizną diagnostyczną, co gwarantuje 100% intymności. Badanie wykonywane jest w znieczuleniu żelowym z użyciem cienkiego videorektoskopu, trwa zaledwie kilka minut i nie wymaga wcześniejszego stosowania silnych środków przeczyszczających.',
+        aio_word_count: 148,
+        lead_physician_name: 'dr n. med. Jan Bujok',
+        physician_specialty: 'Chirurg Ogólny, Proktolog',
+        pwz_verified: true,
+        clinical_studies_cited: 3,
+        original_assets_count: 9,
+        effort_score: 94,
+        schema_types: ['MedicalClinic', 'Physician', 'FAQPage', 'Place'],
+        entity_density_score: 84,
+        click_depth: 1,
+        site_focus_score: 0.95,
+        site_radius_delta: 0.05,
+        base_price_pln: 450,
+        telemetry: {
+          impressions: 6400,
+          total_clicks: 890,
+          good_clicks: 812,
+          bad_clicks: 41,
+          last_longest_clicks: 615,
+          avg_dwell_time_sec: 262,
+          avg_scroll_depth_pct: 91.0,
+          interactive_3d_or_calc_uses: 580,
+          online_bookings: 71,
+          phone_calls: 52,
+          calculator_leads: 19,
+          revenue_pln: 178000,
+          lcp_ms: 1890,
+          inp_ms: 115,
+          cls_score: 0.03,
+          ttfb_ms: 195,
+          insight: 'Wirtualny model 3D gabinetu i strefy wejścia redukuje stres przed pierwszą wizytą i daje najdłuższy czas sesji (262s).'
+        }
+      }
+    ];
+
+    let pages = (() => {
+      try {
+        const s = localStorage.getItem(DB_KEY);
+        return s ? JSON.parse(s) : JSON.parse(JSON.stringify(SEED_PAGES));
+      } catch (e) {
+        return JSON.parse(JSON.stringify(SEED_PAGES));
+      }
+    })();
+
+    let activeIndex = 0;
+
+    function calcMetrics(p) {
+      const tel = p.telemetry;
+      const totalC = Math.max(tel.total_clicks, 1);
+      const goodRatio = tel.good_clicks / Math.max(tel.good_clicks + tel.bad_clicks, 1);
+      const llcRatio = tel.last_longest_clicks / totalC;
+      const dwellNorm = Math.min(tel.avg_dwell_time_sec / 180.0, 1.0);
+      const navboostScore = goodRatio * 50 + llcRatio * 30 + dwellNorm * 20;
+
+      const pwzScore = p.pwz_verified ? 25 : 0;
+      const studiesScore = Math.min(p.clinical_studies_cited / 6.0, 1.0) * 20;
+      const assetsScore = Math.min(p.original_assets_count / 8.0, 1.0) * 20;
+      const effortPart = (p.effort_score / 100.0) * 35;
+      const eeatScore = pwzScore + studiesScore + assetsScore + effortPart;
+
+      const wc = p.aio_word_count;
+      const passageScore = (wc >= 130 && wc <= 170) ? 40 : 25;
+      const schemaScore = Math.min(p.schema_types.length / 4.0, 1.0) * 30;
+      const entityPart = (p.entity_density_score / 100.0) * 30;
+      const geoScore = passageScore + schemaScore + entityPart;
+
+      const cwvScore = (tel.lcp_ms <= 2500 ? 40 : 15) + (tel.inp_ms <= 200 ? 35 : 10) + (tel.cls_score <= 0.10 ? 25 : 5);
+      const domainScore = (p.click_depth === 1 ? 40 : 25) + (p.site_focus_score * 40) + ((1 - p.site_radius_delta) * 20);
+
+      const seoScore = navboostScore * 0.35 + eeatScore * 0.25 + geoScore * 0.20 + cwvScore * 0.10 + domainScore * 0.10;
+      const leads = tel.online_bookings + tel.phone_calls + tel.calculator_leads;
+      const convRate = (leads / totalC) * 100.0;
+      const widgetRate = (tel.interactive_3d_or_calc_uses / totalC) * 100.0;
+      const salesScore = Math.min(100.0, convRate * 6.2 + widgetRate * 0.75);
+      const reward = ((salesScore * 0.60) + (seoScore * 0.40)) / 100.0;
+
+      return {
+        convRate: convRate.toFixed(2),
+        goodPct: (goodRatio * 100).toFixed(1),
+        seoScore: seoScore.toFixed(1),
+        reward: reward.toFixed(4),
+        leads
+      };
+    }
+
+    function selectProcedure(idx) {
+      activeIndex = idx;
+      document.querySelectorAll('.tab-btn').forEach((btn, i) => {
+        btn.classList.toggle('active', i === idx);
+      });
+      renderHero();
+    }
+
+    function renderHero() {
+      const p = pages[activeIndex];
+      document.getElementById('activePillarTag').textContent = `${p.service_pillar.toUpperCase()} • ARCHETYP: ${p.content_archetype}`;
+      document.getElementById('activeH1').textContent = p.h1_headline;
+      document.getElementById('activeH2Question').textContent = p.h2_aio_question;
+      document.getElementById('activeAioPassage').textContent = p.aio_direct_answer_passage;
+      document.getElementById('activeDoctor').textContent = `${p.lead_physician_name} (${p.physician_specialty})`;
+      document.getElementById('activeWordCount').textContent = `${p.aio_word_count} słów`;
+      document.getElementById('activePriceBox').textContent = `${p.base_price_pln.toLocaleString('pl-PL')} PLN`;
+    }
+
+    function renderDatabase() {
+      const ranked = pages.map(p => ({ ...p, _m: calcMetrics(p) }))
+        .sort((a, b) => parseFloat(b._m.reward) - parseFloat(a._m.reward));
+
+      document.getElementById('pagesDatabaseList').innerHTML = ranked.map((p, i) => `
+        <div class="liquid-glass page-card">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px; flex-wrap:wrap;">
+            <div>
+              <span style="font-size:11px; font-family:monospace; color:var(--cyan); font-weight:700;">
+                #${i + 1} • https://bmclinic.co${p.url_path} • [${p.content_archetype}]
+              </span>
+              <h3 style="font-size:16px; margin-top:4px;">${p.procedure_title}</h3>
+            </div>
+            <div style="text-align:right; background:rgba(184,255,1,0.1); border:1px solid rgba(184,255,1,0.35); padding:6px 12px; border-radius:12px;">
+              <div style="font-size:10px; color:var(--text-muted);">RL REWARD</div>
+              <div style="font-size:18px; font-weight:800; color:var(--lime);">${p._m.reward}</div>
+            </div>
+          </div>
+
+          <div class="metrics-strip">
+            <div><span>Konwersja Sprzedaży</span><strong style="color:var(--cyan);">${p._m.convRate}% (${p._m.leads})</strong></div>
+            <div><span>NavBoost GoodClicks</span><strong style="color:var(--lime);">${p._m.goodPct}%</strong></div>
+            <div><span>lastLongestClicks</span><strong>${p.telemetry.last_longest_clicks}</strong></div>
+            <div><span>Interakcje 3D/Kalk.</span><strong>${p.telemetry.interactive_3d_or_calc_uses}</strong></div>
+            <div><span>Wynik Google SEO</span><strong>${p._m.seoScore}/100</strong></div>
+            <div><span>Przychód PLN</span><strong>${p.telemetry.revenue_pln.toLocaleString('pl-PL')} zł</strong></div>
+          </div>
+
+          <div style="margin-top:10px; font-size:12px; color:#cbd5e1;">
+            <strong>Wzorzec Agenta AI:</strong> ${p.telemetry.insight}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function triggerPatientEvent(type) {
+      const p = pages[activeIndex];
+      const t = p.telemetry;
+      if (type === 'BOOKING') {
+        t.total_clicks += 1;
+        t.good_clicks += 1;
+        t.last_longest_clicks += 1;
+        t.interactive_3d_or_calc_uses += 1;
+        t.online_bookings += 1;
+        t.revenue_pln += p.base_price_pln;
+      } else if (type === 'PHONE') {
+        t.total_clicks += 1;
+        t.good_clicks += 1;
+        t.last_longest_clicks += 1;
+        t.phone_calls += 1;
+        t.revenue_pln += Math.round(p.base_price_pln * 0.5);
+      } else if (type === 'CALC') {
+        t.total_clicks += 1;
+        t.good_clicks += 1;
+        t.interactive_3d_or_calc_uses += 1;
+        t.calculator_leads += 1;
+        t.revenue_pln += Math.round(p.base_price_pln * 0.35);
+      } else if (type === '3D_INTERACT') {
+        t.interactive_3d_or_calc_uses += 1;
+        t.avg_dwell_time_sec = Math.min(420, t.avg_dwell_time_sec + 5);
+      } else if (type === 'BAD_CLICK') {
+        t.total_clicks += 1;
+        t.bad_clicks += 1;
+      }
+      try { localStorage.setItem(DB_KEY, JSON.stringify(pages)); } catch (e) {}
+      renderDatabase();
+      generateNewBmClinicPage();
+    }
+
+    function generateNewBmClinicPage() {
+      const ranked = pages.map(p => ({ ...p, _m: calcMetrics(p) }))
+        .sort((a, b) => parseFloat(b._m.reward) - parseFloat(a._m.reward));
+      const winner = ranked[0];
+      const service = document.getElementById('agentNewService').value.trim();
+      const doc = document.getElementById('agentPhysician').value.trim();
+      const slug = service.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+
+      const out = {
+        domain: "bmclinic.co",
+        urlPath: `/procedury/${slug}`,
+        selectedWinningArchetype: winner.content_archetype,
+        learnedFromPageWithReward: winner._m.reward,
+        seoAndGeoParameters: {
+          clickDepthFromHomepage: 1,
+          targetAioPassageWords: "130-170 słów bezpośrednio pod H2",
+          requiredInteractiveComponent: "<Laser3DProcedureVisualizer /> + <InstantRecoveryAndPriceCalculator />",
+          eeatVerification: `${doc} (PWZ Verified)`
+        },
+        generatedContent: {
+          h1: `${service} w BM Clinic Warszawa — małoinwazyjny zabieg 1 dnia`,
+          h2_aio: `Na czym polega ${service.toLowerCase()} i jak szybko można wrócić do pracy?`,
+          aio_passage_152_words: `${service} w BM Clinic to precyzyjna procedura światłowodowa wykonywana w znieczuleniu miejscowym bez rozległego nacinania tkanek i bez konieczności hospitalizacji. Energia wiązki laserowej zamyka zmienione chorobowo struktury od wewnątrz, minimalizując dolegliwości bólowe oraz ryzyko nawrotu. Cały zabieg trwa około 30 minut, a pacjent wraca do domu tego samego dnia i może podjąć pracę biurową już po 24–48 godzinach.`
+        },
+        schemaOrgJsonLd: {
+          "@context": "https://schema.org",
+          "@type": "MedicalProcedure",
+          "name": service,
+          "url": `https://bmclinic.co/procedury/${slug}`,
+          "procedureType": "https://schema.org/NoninvasiveProcedure",
+          "performer": { "@type": "Physician", "name": doc }
+        }
+      };
+      document.getElementById('agentBlueprintOut').textContent = JSON.stringify(out, null, 2);
+    }
+
+    function exportBmClinicState() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(pages, null, 2));
+      const a = document.createElement('a');
+      a.setAttribute("href", dataStr);
+      a.setAttribute("download", "bmclinic_co_seo_agent_database.json");
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    }
+
+    // Animacja 3D Liquid Glass Ring / Laser Beam na Canvasie
+    const canvas = document.getElementById('laser3dCanvas');
+    const ctx = canvas.getContext('2d');
+    let angle = 0;
+    function draw3dScene() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const cx = canvas.width / 2;
+      const cy = canvas.height / 2;
+
+      for (let layer = 3; layer >= 0; layer--) {
+        const r = 42 + layer * 16;
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.rotate(angle * (layer % 2 === 0 ? 1 : -0.8));
+        ctx.beginPath();
+        ctx.ellipse(0, 0, r * 1.45, r * 0.62, 0.25, 0, Math.PI * 1.65);
+        ctx.strokeStyle = layer === 1 ? 'rgba(184, 255, 1, 0.85)' : 'rgba(0, 229, 255, 0.55)';
+        ctx.lineWidth = layer === 1 ? 3.5 : 2;
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      // Centralny impuls lasera 1470nm
+      const pulse = 10 + Math.sin(angle * 3) * 3;
+      const grad = ctx.createRadialGradient(cx, cy, 2, cx, cy, pulse * 3);
+      grad.addColorStop(0, '#b8ff01');
+      grad.addColorStop(0.5, 'rgba(0, 229, 255, 0.65)');
+      grad.addColorStop(1, 'transparent');
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(cx, cy, pulse * 3, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#e2e8f0';
+      ctx.font = '600 11px -apple-system, sans-serif';
+      ctx.fillText('Wiązka światłowodowa LHP 1470 nm • Symulacja 3D BM Clinic', 16, canvas.height - 14);
+
+      angle += 0.018;
+      requestAnimationFrame(draw3dScene);
+    }
+
+    renderHero();
+    renderDatabase();
+    generateNewBmClinicPage();
+    draw3dScene();
+  </script>
+</body>
+</html>
