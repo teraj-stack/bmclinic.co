@@ -1,0 +1,6 @@
+# BM Clinic functional foundation
+Implement the approved Sky Lobby and four themed departments in the existing Next.js app. Keep medical drafts private until explicitly reviewed and published. Persist services, revisions and privacy-limited consented interaction counts in SQLite. No patient accounts or medical records. Booking is an external integration configured by the operator, never a simulated confirmation. The configured real clinic address is separate from the fictional visual lobby.
+
+Architecture: one application owns content and analytics. The second repository remains a clearly marked legacy demonstration; it must not delete data or claim persistence. SQLite requires a persistent disk and a single application instance; document this deployment constraint. Keep existing databases intact; introduce new versioned tables. No automatic medical claims, fake rankings, PWZ verification or synthetic revenue.
+
+Implementation choices: Next.js App Router, CSS token themes, server-rendered published content, password-protected administrator session, CSRF origin validation, bounded strict API validation, environment-only secrets. Maintainable illustrative UI with the approved reception image; no new medical diagnoses or invented clinic contact details.

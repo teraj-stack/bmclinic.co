@@ -81,32 +81,13 @@ def init_bmclinic_db():
     with open(SCHEMA_PATH, "r", encoding="utf-8") as f:
         cur.executescript(f.read())
 
-    # Usunięcie wszystkich wgranych wcześniej filarów usługowych (czysta baza danych)
-    cur.execute("DELETE FROM realtime_patient_events")
-    cur.execute("DELETE FROM page_telemetry_and_sales")
-    cur.execute("DELETE FROM medical_pages")
-    cur.execute("DELETE FROM sqlite_sequence WHERE name IN ('medical_pages', 'page_telemetry_and_sales', 'realtime_patient_events')")
-
+    # Initialization is additive. Existing rows and counters are preserved.
     conn.commit()
     conn.close()
 
-    state_out = os.path.join(PUBLIC_DIR, "bmclinic_agent_state.json")
-    with open(state_out, "w", encoding="utf-8") as f:
-        json.dump(
-            {
-                "domain": "bmclinic.co",
-                "status": "CLEAN_FOUNDATION_NO_PRELOADED_PILLARS",
-                "generated_at": datetime.now().isoformat(),
-                "pages": [],
-            },
-            f,
-            indent=2,
-            ensure_ascii=False,
-        )
-
-    print(f"[OK] Czysty fundament bazy danych bmclinic.co (0 wgranych filarów): {DB_PATH}")
-    print(f"[OK] Stan wiedzy Agenta AI wyczyszczony: {state_out}")
+    print(f"[OK] Schemat zainicjalizowany bez usuwania danych: {DB_PATH}")
 
 
 if __name__ == "__main__":
     init_bmclinic_db()
+

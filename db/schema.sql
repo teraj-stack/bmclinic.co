@@ -88,3 +88,4 @@ CREATE TABLE IF NOT EXISTS realtime_patient_events (
     user_device TEXT DEFAULT 'mobile',
     created_at TEXT DEFAULT (datetime('now'))
 );
+

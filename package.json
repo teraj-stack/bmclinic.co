@@ -7,20 +7,27 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "db:init": "python3 bmclinic_db_engine.py"
+    "db:init": "python3 bmclinic_db_engine.py",
+    "test": "node --import tsx --test tests/*.test.ts",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "better-sqlite3": "^11.5.0",
-    "next": "^15.1.0",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "better-sqlite3": "^12.0.0",
+    "next": "16.4.6",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "web-vitals": "^6.2.3"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.11",
     "@types/node": "^22.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
-    "tailwindcss": "^3.4.15",
+    "prettier": "^3.9.10",
+    "tsx": "^4.20.0",
     "typescript": "^5.7.0"
+  },
+  "engines": {
+    "node": ">=22.13.0"
   }
 }
