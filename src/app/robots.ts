@@ -7,7 +7,7 @@ export default function robots(): MetadataRoute.Robots {
       allow: process.env.SITE_INDEXABLE === "true" ? "/" : undefined,
       disallow:
         process.env.SITE_INDEXABLE === "true"
-          ? ["/admin", "/api/", "/prywatnosc"]
+          ? ["/admin", "/api/", "/pacjent", "/prywatnosc"]
           : ["/"],
     },
     sitemap: siteUrl() + "/sitemap.xml",

@@ -50,9 +50,27 @@ export function authorized(request: Request) {
   return validSession(cookie ?? "");
 }
 export async function readJson(request: Request) {
-  if (Number(request.headers.get("content-length") ?? 0) > 50000)
-    throw new Error("Za duże żądanie.");
-  const raw = await request.text();
-  if (Buffer.byteLength(raw) > 50000) throw new Error("Za duże żądanie.");
-  return JSON.parse(raw);
+  if (
+    Number(request.headers.get("content-length") ?? 0) > 50000 ||
+    !request.body
+  )
+    throw new Error("Za duże lub puste żądanie.");
+  const reader = request.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let length = 0;
+  try {
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      length += value.byteLength;
+      if (length > 50000) {
+        await reader.cancel();
+        throw new Error("Za duże żądanie.");
+      }
+      chunks.push(value);
+    }
+  } finally {
+    reader.releaseLock();
+  }
+  return JSON.parse(Buffer.concat(chunks).toString("utf8"));
 }
