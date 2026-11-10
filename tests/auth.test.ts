@@ -33,3 +33,21 @@ test("cross-site writes fail closed", () => {
     true,
   );
 });
+test("JSON reader rejects chunked oversized requests before consuming full stream", async () => {
+  const { readJson } = await import("../src/lib/auth");
+  let chunks = 0;
+  const stream = new ReadableStream({
+    pull(controller) {
+      chunks++;
+      controller.enqueue(new Uint8Array(30000));
+      if (chunks === 10) controller.close();
+    },
+  });
+  const req = new Request("http://clinic.test", {
+    method: "POST",
+    body: stream,
+    duplex: "half",
+  } as RequestInit);
+  await assert.rejects(() => readJson(req));
+  assert.ok(chunks < 10);
+});

@@ -1,8 +1,5 @@
-import WebVitals from "@/components/WebVitals";
+import SiteShell from "@/components/SiteShell";
 import type { Metadata } from "next";
-import Link from "next/link";
-import Consent from "@/components/Consent";
-import Header from "@/components/Header";
 import { siteUrl } from "@/lib/departments";
 import "./globals.css";
 export const metadata: Metadata = {
@@ -29,16 +26,7 @@ export default function RootLayout({
         <a className="skip" href="#main">
           Przejdź do treści
         </a>
-        <Header />
-        {children}
-        <footer>
-          <Link href="/">BM Clinic · Bujok Medical</Link>
-          <span>Spokojna przestrzeń. Świadome decyzje.</span>
-          <Link href="/prywatnosc">Prywatność</Link>
-          <Link href="/admin">Panel redakcyjny</Link>
-        </footer>
-        <Consent />
-        <WebVitals />
+        <SiteShell>{children}</SiteShell>
       </body>
     </html>
   );
