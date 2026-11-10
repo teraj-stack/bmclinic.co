@@ -35,6 +35,27 @@ export default function IntakeFieldInput({
           {field.hint}
         </p>
       )}
+      {field.buttons && field.options && (
+        <div
+          id={id}
+          tabIndex={-1}
+          className="quick-answers"
+          role="group"
+          aria-label={field.label}
+        >
+          {field.options.map((answer) => (
+            <button
+              type="button"
+              key={answer}
+              disabled={disabled}
+              aria-pressed={value === answer}
+              onClick={() => onChange(answer)}
+            >
+              {answer}
+            </button>
+          ))}
+        </div>
+      )}
       {field.quickAnswers && (
         <div
           className="quick-answers"
@@ -61,7 +82,7 @@ export default function IntakeFieldInput({
           </button>
         </div>
       )}
-      {field.type === "textarea" ? (
+      {field.buttons ? null : field.type === "textarea" ? (
         <textarea
           id={id}
           rows={3}

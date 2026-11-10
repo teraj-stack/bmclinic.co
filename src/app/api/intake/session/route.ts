@@ -35,7 +35,10 @@ export async function POST(r: Request) {
     if (
       !p ||
       !["draft", "submit"].includes(p.action) ||
-      Object.keys(p).some((k) => !["action", "answers", "revision"].includes(k))
+      Object.keys(p).some(
+        (k) =>
+          !["action", "answers", "revision", "reviewedPrevious"].includes(k),
+      )
     )
       return privateJson({ error: "Nieprawidłowe żądanie." }, 400);
     const result = intakeStore().save(
@@ -43,6 +46,7 @@ export async function POST(r: Request) {
       p.answers,
       p.revision,
       p.action === "submit",
+      p.reviewedPrevious === true,
     );
     return privateJson(result);
   } catch (e) {

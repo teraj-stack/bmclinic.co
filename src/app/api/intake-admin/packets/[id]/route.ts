@@ -1,6 +1,7 @@
 import { safeOrigin, readJson } from "@/lib/auth";
 import {
   intakeStore,
+  intakeConfig,
   staffAuthorized,
   staffActor,
 } from "@/lib/intake/security";
@@ -29,6 +30,23 @@ export async function POST(r: Request, c: C) {
   try {
     const { id } = await c.params,
       p = await readJson(r);
+    if (p.action === "followUp") {
+      if (p.identityChecked !== true)
+        return privateJson(
+          {
+            error:
+              "Potwierdź tożsamość tej samej osoby przed przygotowaniem aktualizacji.",
+          },
+          400,
+        );
+      return privateJson({
+        invitation: intakeStore().followUp(
+          id,
+          staffActor(r),
+          intakeConfig().notice,
+        ),
+      });
+    }
     if (p.action === "reissue")
       return privateJson({
         invitation: intakeStore().reissue(id, staffActor(r)),

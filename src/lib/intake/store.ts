@@ -10,7 +10,17 @@ import {
 } from "node:crypto";
 import { mkdirSync } from "node:fs";
 import { dirname } from "node:path";
-import { FORM_VERSION, parseAnswers, parseFormIds, type FormId } from "./forms";
+import {
+  FORM_VERSION,
+  parseAnswers,
+  parseFormIds,
+  packetForms,
+  parseProcedure,
+  schemaForProcedure,
+  type IntakeForm,
+  type ProcedureId,
+  type FormId,
+} from "./forms";
 const hash = (s: string) => createHash("sha256").update(s).digest("hex");
 export type Notice = { version: string; text: string };
 export type IntakePacket = {
@@ -18,6 +28,14 @@ export type IntakePacket = {
   formVersion: string;
   notice: Notice;
   answers: Record<string, string>;
+  schema?: IntakeForm[];
+  procedure?: ProcedureId;
+  previous?: {
+    packetId: string;
+    submittedAt: string;
+    answers: Record<string, string>;
+  };
+  previousReviewedAt?: string;
   submittedAt?: string;
   submissionHash?: string;
   review?: {
@@ -70,7 +88,13 @@ export class IntakeStore {
       )
       .run(id, action, actor, this.now());
   }
-  issue(forms: FormId[], notice: Notice, actor: string) {
+  issue(
+    forms: FormId[],
+    notice: Notice,
+    actor: string,
+    procedure: ProcedureId = "general",
+  ) {
+    parseProcedure(procedure);
     parseFormIds(forms);
     if (!notice.text || !notice.version)
       throw Error("Brak informacji dla pacjenta.");
@@ -87,6 +111,10 @@ export class IntakeStore {
           this.seal(id, {
             forms,
             formVersion: FORM_VERSION,
+            procedure,
+            schema: schemaForProcedure(procedure).filter((f) =>
+              forms.includes(f.id),
+            ),
             notice,
             answers: {},
           }),
@@ -106,6 +134,44 @@ export class IntakeStore {
       this.audit(id, "invite_created", actor);
     })();
     return { id, token, pin, expires };
+  }
+  followUp(id: string, actor: string, notice: Notice) {
+    return this.db.transaction(() => {
+      const source = this.detail(id, actor);
+      if (
+        source.status !== "submitted" ||
+        !source.review ||
+        !source.submittedAt ||
+        !source.forms.includes("health")
+      )
+        throw Error(
+          "Aktualizacja wymaga przekazanego, zweryfikowanego wywiadu.",
+        );
+      const invitation = this.issue(
+        source.forms,
+        notice,
+        actor,
+        source.procedure ?? "general",
+      );
+      const payload: IntakePacket = {
+        forms: source.forms,
+        formVersion: source.formVersion,
+        schema: packetForms(source),
+        procedure: source.procedure ?? "general",
+        notice,
+        answers: { ...source.answers },
+        previous: {
+          packetId: id,
+          submittedAt: source.submittedAt,
+          answers: { ...source.answers },
+        },
+      };
+      this.db
+        .prepare("UPDATE intake_packets_v1 SET ciphertext=? WHERE id=?")
+        .run(this.seal(invitation.id, payload), invitation.id);
+      this.audit(invitation.id, "follow_up_created_identity_confirmed", actor);
+      return invitation;
+    })();
   }
   reissue(id: string, actor: string) {
     return this.db.transaction(() => {
@@ -224,14 +290,27 @@ export class IntakeStore {
       status: r.status,
     };
   }
-  save(session: string, answers: unknown, revision: number, final: boolean) {
+  save(
+    session: string,
+    answers: unknown,
+    revision: number,
+    final: boolean,
+    reviewedPrevious = false,
+  ) {
     return this.db.transaction(() => {
       const r = this.row(session);
       if (r.status !== "draft") throw Error("Formularz został już przekazany.");
       if (!Number.isSafeInteger(revision) || r.revision !== revision)
         throw Error("Zmieniono wersję formularza. Odśwież dane.");
       const p = this.unseal(r.id, r.ciphertext);
-      p.answers = parseAnswers(answers, p.forms, final);
+      p.answers = parseAnswers(answers, p.forms, final, packetForms(p));
+      if (final && p.previous) {
+        if (reviewedPrevious !== true)
+          throw Error(
+            "Przejrzyj wcześniejsze odpowiedzi i potwierdź ich aktualność po wprowadzeniu zmian.",
+          );
+        p.previousReviewedAt = new Date(this.now()).toISOString();
+      }
       if (final) {
         p.submittedAt = new Date(this.now()).toISOString();
         p.submissionHash = hash(
@@ -239,6 +318,10 @@ export class IntakeStore {
             forms: p.forms,
             formVersion: p.formVersion,
             notice: p.notice,
+            schema: p.schema,
+            procedure: p.procedure,
+            previous: p.previous,
+            previousReviewedAt: p.previousReviewedAt,
             answers: p.answers,
             submittedAt: p.submittedAt,
           }),

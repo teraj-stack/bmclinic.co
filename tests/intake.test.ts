@@ -4,7 +4,7 @@ import { mkdtempSync, rmSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { IntakeStore } from "../src/lib/intake/store";
-import { parseAnswers } from "../src/lib/intake/forms";
+import { parseAnswers, intakeForms } from "../src/lib/intake/forms";
 const notice = {
   version: "test-1",
   text: "Informacja dla testowego administratora danych. ".repeat(20),
@@ -22,7 +22,20 @@ test("intake data encrypted; one-time invitation; optimistic revision; immutable
     assert.equal(s.load(session.token).revision, 0);
     s.save(session.token, answers, 0, false);
     assert.throws(() => s.save(session.token, answers, 0, false));
-    s.save(session.token, answers, 1, true);
+    s.save(
+      session.token,
+      {
+        ...answers,
+        ...Object.fromEntries(
+          intakeForms
+            .find((f) => f.id === "health")!
+            .fields.filter((f) => f.buttons && f.required)
+            .map((f) => [f.id, "Nie"]),
+        ),
+      },
+      1,
+      true,
+    );
     assert.throws(() => s.save(session.token, answers, 2, false));
     s.close();
     s = new IntakeStore(path, Buffer.alloc(32, 7));
@@ -128,9 +141,10 @@ test("quick answers remain explicit patient choices; uncertainty and custom deta
   const { intakeForms } = await import("../src/lib/intake/forms");
   const health = intakeForms.find((f) => f.id === "health")!;
   assert.deepEqual(parseAnswers({}, ["registration", "health"], false), {});
-  for (const field of health.fields) {
-    assert.ok(field.quickAnswers?.length, field.id);
-    for (const answer of field.quickAnswers!)
+  for (const field of health.fields.filter(
+    (f) => f.buttons || f.quickAnswers,
+  )) {
+    for (const answer of field.options ?? field.quickAnswers!)
       assert.equal(
         parseAnswers({ [field.id]: answer }, ["registration", "health"], false)[
           field.id
@@ -140,8 +154,14 @@ test("quick answers remain explicit patient choices; uncertainty and custom deta
   }
   const custom = {
     ...answers,
-    healthImplants: "Kolczyk w okolicy zabiegu — omówię z lekarzem",
-    healthAllergies: "Nie wiem — omówię z lekarzem",
+    ...Object.fromEntries(
+      health.fields
+        .filter((f) => f.buttons && f.required)
+        .map((f) => [f.id, "Nie"]),
+    ),
+    implantsCheck: "Tak",
+    healthImplants: "Implant w okolicy zabiegu",
+    allergiesCheck: "Nie wiem — omówię z lekarzem",
   };
   assert.deepEqual(
     parseAnswers(custom, ["registration", "health"], true),

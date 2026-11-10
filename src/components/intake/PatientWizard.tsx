@@ -2,6 +2,11 @@
 import { useEffect, useRef, useState } from "react";
 import {
   intakeForms,
+  packetForms,
+  fieldVisible,
+  updateAnswer,
+  procedures,
+  type ProcedureId,
   documentWorkflow,
   FORM_VERSION,
   type FormId,
@@ -35,14 +40,15 @@ export default function PatientWizard({ demo = false }: { demo?: boolean }) {
     [pin, setPin] = useState(""),
     [message, setMessage] = useState(""),
     [busy, setBusy] = useState(false),
-    [confirm, setConfirm] = useState(false);
+    [confirm, setConfirm] = useState(false),
+    [reviewedPrevious, setReviewedPrevious] = useState(false);
   const lastActivity = useRef(Date.now());
   const heading = useRef<HTMLHeadingElement>(null);
   const closed = useRef(false);
   const generation = useRef(0);
   const initialized = useRef(false);
   const initialReset = useRef<Promise<unknown>>(Promise.resolve());
-  const forms = intakeForms.filter((f) => packet?.forms.includes(f.id));
+  const forms = packet ? packetForms(packet) : [];
   const summaryStep = forms.length + 1;
   async function finish(
     reason = "Sesja zakończona. Możesz przekazać tablet recepcji.",
@@ -56,6 +62,7 @@ export default function PatientWizard({ demo = false }: { demo?: boolean }) {
     setPin("");
     setStep(0);
     setConfirm(false);
+    setReviewedPrevious(false);
     setMessage(
       demo
         ? reason
@@ -141,6 +148,9 @@ export default function PatientWizard({ demo = false }: { demo?: boolean }) {
       const data = await response.json();
       if (!response.ok) throw Error(data.error);
       if (operation !== generation.current || closed.current) return;
+      setReviewedPrevious(false);
+      setConfirm(false);
+      setStep(0);
       setPacket(data.packet);
       setAnswers(data.packet.answers);
       setPin("");
@@ -158,7 +168,11 @@ export default function PatientWizard({ demo = false }: { demo?: boolean }) {
     setBusy(true);
     setMessage("");
     try {
-      const validated = parseAnswers(answers, packet.forms, final);
+      const validated = parseAnswers(answers, packet.forms, final, forms);
+      if (final && packet.previous && !reviewedPrevious)
+        throw Error(
+          "Przejrzyj wcześniejsze odpowiedzi i potwierdź ich aktualność po wprowadzeniu zmian.",
+        );
       if (demo) {
         setPacket({
           ...packet,
@@ -180,6 +194,7 @@ export default function PatientWizard({ demo = false }: { demo?: boolean }) {
           action: final ? "submit" : "draft",
           answers: validated,
           revision: packet.revision,
+          reviewedPrevious,
         }),
       });
       const p = await r.json();
@@ -209,8 +224,19 @@ export default function PatientWizard({ demo = false }: { demo?: boolean }) {
     }
   }
   function update(id: string, value: string) {
-    setAnswers((previous) => ({ ...previous, [id]: value }));
+    const next = updateAnswer(answers, id, value, forms);
+    if (
+      Object.keys(answers).some(
+        (key) => answers[key]?.trim() && !(key in next),
+      ) &&
+      !window.confirm(
+        "Zmiana odpowiedzi usunie szczegóły, które już jej nie dotyczą. Kontynuować?",
+      )
+    )
+      return;
+    setAnswers(next);
     setConfirm(false);
+    setReviewedPrevious(false);
   }
   return (
     <main id="main" className="intake-page">
@@ -227,6 +253,30 @@ export default function PatientWizard({ demo = false }: { demo?: boolean }) {
         Wypełnij przed wizytą lub na tablecie w poczekalni. W razie wątpliwości
         poproś recepcję o pomoc.
       </p>
+      {demo && packet?.status === "draft" && (
+        <label className="demo-procedure">
+          Pokaż przykładowy moduł zabiegu (w klinice wybiera personel)
+          <select
+            value={packet.procedure ?? "general"}
+            onChange={(e) => {
+              setPacket({
+                ...demoPacket,
+                procedure: e.target.value as ProcedureId,
+              });
+              setAnswers({});
+              setStep(0);
+              setConfirm(false);
+              setReviewedPrevious(false);
+            }}
+          >
+            {procedures.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.label}
+              </option>
+            ))}
+          </select>
+        </label>
+      )}
       {message && (
         <p className="notice" role="status">
           {message}
@@ -303,6 +353,23 @@ export default function PatientWizard({ demo = false }: { demo?: boolean }) {
             ekran zostanie wyczyszczony. Niezapisane odpowiedzi mogą zostać
             utracone.
           </p>
+          {packet.previous && (
+            <section className="intake-card">
+              <h2>Aktualizacja przed kolejną wizytą</h2>
+              <p>
+                Wyświetlamy Twoje wcześniejsze odpowiedzi z{" "}
+                {new Date(packet.previous.submittedAt).toLocaleDateString(
+                  "pl-PL",
+                )}
+                . Przejrzyj je i popraw to, co się zmieniło. Poprzedni dokument
+                pozostaje zachowany.
+              </p>
+              <p>
+                Jeśli widzisz dane innej osoby, zakończ sesję i zgłoś to
+                recepcji.
+              </p>
+            </section>
+          )}
           <section className="intake-card">
             <h2 ref={heading} tabIndex={-1}>
               {step === 0
@@ -330,15 +397,28 @@ export default function PatientWizard({ demo = false }: { demo?: boolean }) {
                   <section className="answer-group" key={f.id}>
                     <h3>{f.title}</h3>
                     <dl>
-                      {f.fields.map((field) => (
-                        <div key={field.id}>
-                          <dt>{field.label}</dt>
-                          <dd>{answers[field.id] || "Nie podano"}</dd>
-                        </div>
-                      ))}
+                      {f.fields
+                        .filter((field) => fieldVisible(field, answers))
+                        .map((field) => (
+                          <div key={field.id}>
+                            <dt>{field.label}</dt>
+                            <dd>{answers[field.id] || "Nie podano"}</dd>
+                          </div>
+                        ))}
                     </dl>
                   </section>
                 ))}
+                {packet.previous && (
+                  <label className="checkbox">
+                    <input
+                      type="checkbox"
+                      checked={reviewedPrevious}
+                      onChange={(e) => setReviewedPrevious(e.target.checked)}
+                    />
+                    Przejrzałem wcześniejsze odpowiedzi. Po wprowadzeniu
+                    ewentualnych zmian przedstawiają mój obecny stan.
+                  </label>
+                )}
                 <label className="checkbox">
                   <input
                     type="checkbox"
@@ -357,15 +437,17 @@ export default function PatientWizard({ demo = false }: { demo?: boolean }) {
               <>
                 <p>{forms[step - 1]?.description}</p>
                 <div className="intake-fields">
-                  {forms[step - 1]?.fields.map((field) => (
-                    <IntakeFieldInput
-                      key={field.id}
-                      field={field}
-                      value={answers[field.id] ?? ""}
-                      disabled={busy}
-                      onChange={(value) => update(field.id, value)}
-                    />
-                  ))}
+                  {forms[step - 1]?.fields
+                    .filter((field) => fieldVisible(field, answers))
+                    .map((field) => (
+                      <IntakeFieldInput
+                        key={field.id}
+                        field={field}
+                        value={answers[field.id] ?? ""}
+                        disabled={busy}
+                        onChange={(value) => update(field.id, value)}
+                      />
+                    ))}
                 </div>
               </>
             )}
@@ -384,6 +466,20 @@ export default function PatientWizard({ demo = false }: { demo?: boolean }) {
                 <button
                   disabled={busy}
                   onClick={async () => {
+                    const missing =
+                      step > 0
+                        ? forms[step - 1]?.fields.find(
+                            (field) =>
+                              field.required &&
+                              fieldVisible(field, answers) &&
+                              !answers[field.id]?.trim(),
+                          )
+                        : undefined;
+                    if (missing) {
+                      setMessage("Odpowiedz na pytanie: " + missing.label);
+                      document.getElementById("intake-" + missing.id)?.focus();
+                      return;
+                    }
                     if (step === 0 || (await save(false))) {
                       setStep(step + 1);
                       setMessage("");
@@ -394,7 +490,9 @@ export default function PatientWizard({ demo = false }: { demo?: boolean }) {
                 </button>
               ) : (
                 <button
-                  disabled={busy || !confirm}
+                  disabled={
+                    busy || !confirm || (!!packet.previous && !reviewedPrevious)
+                  }
                   onClick={() => void save(true)}
                 >
                   {busy ? "Przekazywanie…" : "Przekaż do kliniki"}

@@ -7,7 +7,7 @@ import {
   cookieValue,
   STAFF_COOKIE,
 } from "@/lib/intake/security";
-import { parseFormIds } from "@/lib/intake/forms";
+import { parseFormIds, parseProcedure } from "@/lib/intake/forms";
 import { privateJson } from "@/lib/intake/responses";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -38,13 +38,15 @@ export async function POST(r: Request) {
     return privateJson({ error: "Niedozwolone źródło." }, 403);
   try {
     const p = await readJson(r);
-    if (Object.keys(p).some((k) => k !== "forms")) throw Error("Błędne pola.");
+    if (Object.keys(p).some((k) => !["forms", "procedure"].includes(k)))
+      throw Error("Błędne pola.");
     return privateJson(
       {
         invitation: intakeStore().issue(
           parseFormIds(p.forms),
           intakeConfig().notice,
           staffActor(r),
+          parseProcedure(p.procedure),
         ),
       },
       201,

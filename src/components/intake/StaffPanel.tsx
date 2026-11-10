@@ -1,7 +1,15 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { intakeForms, type FormId } from "@/lib/intake/forms";
+import {
+  intakeForms,
+  packetForms,
+  fieldVisible,
+  attentionItems,
+  procedures,
+  type ProcedureId,
+  type FormId,
+} from "@/lib/intake/forms";
 import type { IntakePacket } from "@/lib/intake/store";
 type Row = { id: string; status: string; created: number; revoked: number };
 type Detail = IntakePacket & {
@@ -13,6 +21,7 @@ type Detail = IntakePacket & {
 export default function StaffPanel() {
   const [ready, setReady] = useState(false),
     [code, setCode] = useState(""),
+    [procedure, setProcedure] = useState<ProcedureId>("general"),
     [forms, setForms] = useState<FormId[]>([
       "registration",
       "health",
@@ -224,6 +233,25 @@ export default function StaffPanel() {
               Wybierz tylko dokumenty potrzebne tej osobie. Dane pacjenta nie są
               wpisywane do adresu linku.
             </p>
+            <label>
+              Moduł wywiadu dobrany przez personel
+              <select
+                value={procedure}
+                disabled={busy}
+                onChange={(e) => setProcedure(e.target.value as ProcedureId)}
+              >
+                {procedures.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <p className="fine">
+              Moduł porządkuje pytania. Nie kwalifikuje automatycznie do zabiegu
+              i nie zastępuje oceny lekarza ani informacji właściwej dla
+              preparatu lub urządzenia.
+            </p>
             <div className="form-choices">
               {intakeForms.map((f) => (
                 <label className="checkbox" key={f.id}>
@@ -248,7 +276,7 @@ export default function StaffPanel() {
               onClick={() =>
                 void action(async () => {
                   setDetail(null);
-                  const p = await api("packets", { forms });
+                  const p = await api("packets", { forms, procedure });
                   setInvite(p.invitation);
                   await load();
                 })
@@ -334,21 +362,83 @@ export default function StaffPanel() {
                 Nie stanowi podpisanej zgody na zabieg ani automatycznie
                 zakończonego wpisu w dokumentacji medycznej.
               </p>
-              {intakeForms
-                .filter((f) => detail.forms.includes(f.id))
-                .map((f) => (
-                  <section key={f.id}>
-                    <h3>{f.title}</h3>
-                    <dl>
-                      {f.fields.map((field) => (
+              <section className="clinical-attention">
+                <h3>Do omówienia z pacjentem</h3>
+                <p>
+                  Moduł:{" "}
+                  {procedures.find((p) => p.id === detail.procedure)?.label ??
+                    "Wywiad ogólny (wcześniejsza wersja)"}
+                  . To podsumowanie odpowiedzi, nie automatyczna kwalifikacja.
+                </p>
+                {attentionItems(packetForms(detail), detail.answers).length ? (
+                  <ul>
+                    {attentionItems(packetForms(detail), detail.answers).map(
+                      (item, i) => (
+                        <li key={i}>
+                          <strong>{item.label}</strong>: {item.value}
+                          {item.detail && <p>{item.detail}</p>}
+                        </li>
+                      ),
+                    )}
+                  </ul>
+                ) : (
+                  <p>
+                    Brak zaznaczonych tematów w automatycznym podsumowaniu.
+                    Sprawdź pełny wywiad, w tym puste odpowiedzi.
+                  </p>
+                )}
+                {detail.previous && (
+                  <>
+                    <h4>Zmiany od poprzedniego wywiadu</h4>
+                    <p>
+                      Dokument źródłowy: {detail.previous.packetId}.
+                      Potwierdzenie aktualności:{" "}
+                      {detail.previousReviewedAt
+                        ? new Date(detail.previousReviewedAt).toLocaleString(
+                            "pl-PL",
+                          )
+                        : "Jeszcze nie potwierdzono"}
+                      .
+                    </p>
+                    <ul>
+                      {packetForms(detail)
+                        .flatMap((f) => f.fields)
+                        .filter(
+                          (f) =>
+                            (detail.answers[f.id] ?? "") !==
+                            (detail.previous!.answers[f.id] ?? ""),
+                        )
+                        .map((f) => (
+                          <li key={f.id}>
+                            <strong>{f.label}</strong>:{" "}
+                            {detail.previous!.answers[f.id] || "Nie podano"} →{" "}
+                            {detail.answers[f.id] ||
+                              "Nie podano / nie dotyczy po zmianie odpowiedzi"}
+                          </li>
+                        ))}
+                    </ul>
+                    {JSON.stringify(detail.answers) ===
+                      JSON.stringify(detail.previous.answers) && (
+                      <p>Pacjent nie zmienił odpowiedzi.</p>
+                    )}
+                  </>
+                )}
+              </section>
+              {packetForms(detail).map((f) => (
+                <section key={f.id}>
+                  <h3>{f.title}</h3>
+                  <dl>
+                    {f.fields
+                      .filter((field) => fieldVisible(field, detail.answers))
+                      .map((field) => (
                         <div key={field.id}>
                           <dt>{field.label}</dt>
                           <dd>{detail.answers[field.id] || "Nie podano"}</dd>
                         </div>
                       ))}
-                    </dl>
-                  </section>
-                ))}
+                  </dl>
+                </section>
+              ))}
               <h3>Historia dokumentu</h3>
               <p>
                 Informacja RODO: {detail.notice.version}
@@ -394,6 +484,32 @@ export default function StaffPanel() {
                       Wznów szkic — nowy link i kod
                     </button>
                   )}
+                  {detail.status === "submitted" &&
+                    detail.review &&
+                    detail.forms.includes("health") && (
+                      <button
+                        disabled={busy}
+                        onClick={() => {
+                          if (
+                            !window.confirm(
+                              "Potwierdzasz tożsamość tej samej osoby i przygotowanie jej wcześniejszych odpowiedzi do aktualizacji na kolejnej wizycie? Nie wysyłaj linku innej osobie.",
+                            )
+                          )
+                            return;
+                          void action(async () => {
+                            const p = await api("packets/" + detail.id, {
+                              action: "followUp",
+                              identityChecked: true,
+                            });
+                            setDetail(null);
+                            setInvite(p.invitation);
+                            await load();
+                          });
+                        }}
+                      >
+                        Kolejna wizyta — przejrzyj i zaktualizuj wywiad
+                      </button>
+                    )}
                   <button onClick={() => window.print()}>
                     Drukuj lub zapisz PDF
                   </button>

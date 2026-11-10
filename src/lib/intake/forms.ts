@@ -1,3 +1,5 @@
+import { legacyV1Forms } from "./legacy-v1";
+import { legacyForms } from "./legacy-forms";
 export type IntakeField = {
   id: string;
   label: string;
@@ -6,6 +8,8 @@ export type IntakeField = {
   required?: boolean;
   hint?: string;
   quickAnswers?: readonly string[];
+  buttons?: boolean;
+  when?: { id: string; values: string[] };
 };
 export type FormId =
   | "registration"
@@ -15,12 +19,46 @@ export type FormId =
   | "records_request"
   | "withdrawal"
   | "data_request";
-export const intakeForms: {
+export type IntakeForm = {
   id: FormId;
   title: string;
   description: string;
   fields: IntakeField[];
-}[] = [
+};
+export function question(
+  id: string,
+  label: string,
+  detailId: string,
+  detailLabel: string,
+  hint?: string,
+  notApplicable = false,
+): IntakeField[] {
+  return [
+    {
+      id,
+      label,
+      type: "choice",
+      buttons: true,
+      required: true,
+      options: [
+        "Nie",
+        "Tak",
+        ...(notApplicable ? ["Nie dotyczy"] : []),
+        "Nie wiem — omówię z lekarzem",
+        "Wolę omówić z lekarzem",
+      ],
+      hint,
+    },
+    {
+      id: detailId,
+      label: detailLabel,
+      type: "textarea",
+      when: { id, values: ["Tak"] },
+      hint: "Opisz krótko, jeśli możesz. Szczegóły można uzupełnić podczas rozmowy.",
+    },
+  ];
+}
+export const intakeForms: IntakeForm[] = [
   {
     id: "registration",
     title: "Dane pacjenta",
@@ -45,100 +83,177 @@ export const intakeForms: {
   },
   {
     id: "health",
-    title: "Ankieta zdrowotna",
+    title: "Krótki wywiad przed wizytą",
     description:
-      "Kilka krótkich pytań przed wizytą lub drobnym zabiegiem. Możesz kliknąć gotową odpowiedź albo napisać własną. Niczego nie zaznaczamy za Ciebie. Nie musisz znać medycznych nazw — wątpliwości omówimy podczas wizyty. Nie zmieniaj samodzielnie leków.",
+      "Odpowiedz osobno na każde pytanie. Szczegóły rozwiną się tylko tam, gdzie będą potrzebne. Jeśli nie masz pewności, wybierz rozmowę z lekarzem. Nie odstawiaj samodzielnie leków.",
     fields: [
       {
         id: "healthReason",
-        label: "Co Cię sprowadza i od kiedy występują dolegliwości?",
+        label: "Z czym przychodzisz?",
+        hint: "Możesz podać cel wizyty lub opisać dolegliwość i od kiedy trwa.",
         type: "textarea",
         quickAnswers: [
-          "Planowany drobny zabieg — bez dolegliwości",
-          "Konsultacja — opiszę podczas wizyty",
+          "Planowany zabieg — bez dolegliwości",
+          "Opiszę podczas wizyty",
         ],
-        hint: "Jeśli masz dolegliwości, opisz je własnymi słowami i podaj, od kiedy trwają. Możesz też wpisać nazwę planowanego zabiegu.",
       },
-      {
-        id: "healthConditions",
-        label: "Choroby przewlekłe, przebyte operacje i pobyty w szpitalu",
-        type: "textarea",
-        quickAnswers: [
-          "Nie choruję przewlekle i nie miałem operacji ani pobytów w szpitalu",
-          "Nie wiem — omówię z lekarzem",
-          "Wolę omówić z lekarzem",
-        ],
-        hint: "Jeżeli coś dotyczy Ciebie, podaj krótko co i kiedy, np. nadciśnienie leczone tabletką lub operacja wyrostka w dzieciństwie. Nie musisz pamiętać dokładnych dat. Kolczyka nie opisuj jako operacji — miejsce na takie informacje jest niżej.",
-      },
-      {
-        id: "healthMedicines",
-        label: "Czy przyjmujesz leki lub suplementy?",
-        type: "textarea",
-        quickAnswers: [
-          "Nie przyjmuję leków ani suplementów",
-          "Nie pamiętam nazw — podam podczas wizyty",
-          "Wolę omówić z lekarzem",
-        ],
-        hint: "Uwzględnij także leki brane doraźnie i bez recepty. Jeśli przyjmujesz leki, wpisz nazwy i dawki, o ile je znasz. Nie odstawiaj ich samodzielnie.",
-      },
-      {
-        id: "healthAllergies",
-        label:
-          "Czy masz uczulenia lub miałeś reakcję na lek, znieczulenie albo opatrunek?",
-        type: "textarea",
-        quickAnswers: [
-          "Nie znam u siebie uczuleń ani takich reakcji",
-          "Nie wiem — omówię z lekarzem",
-          "Wolę omówić z lekarzem",
-        ],
-        hint: "Jeżeli tak, napisz na co i co się wydarzyło, np. wysypka po leku lub podrażnienie po plastrze. Nie musisz samodzielnie rozstrzygać, czy była to alergia.",
-      },
-      {
-        id: "healthClotting",
-        label:
-          "Czy miałeś problemy z krzepnięciem, nadmiernym krwawieniem, zakrzepicę lub zatorowość?",
-        type: "textarea",
-        quickAnswers: [
-          "Nie miałem takich problemów",
-          "Nie wiem — omówię z lekarzem",
-          "Wolę omówić z lekarzem",
-        ],
-        hint: "Jeśli rozpoznano u Ciebie zaburzenia krzepnięcia lub występowało trudne do zatrzymania krwawienie, napisz o tym. Zwykłego drobnego skaleczenia nie musisz opisywać.",
-      },
-      {
-        id: "healthPregnancy",
-        label: "Ciąża, możliwość ciąży lub karmienie piersią — czy dotyczy?",
-        quickAnswers: [
-          "Nie dotyczy",
-          "Jestem w ciąży lub ciąża jest możliwa",
-          "Karmię piersią",
-          "Wolę omówić z lekarzem",
-        ],
-        hint: "Jeśli nie masz pewności, możesz napisać o tym lub omówić to z lekarzem.",
-      },
-      {
-        id: "healthImplants",
-        label:
-          "Implanty, urządzenia medyczne, kolczyki w okolicy zabiegu lub problemy z gojeniem",
-        type: "textarea",
-        quickAnswers: [
-          "Nie mam nic do zgłoszenia w tym zakresie",
-          "Nie wiem, czy to istotne — omówię z lekarzem",
-          "Wolę omówić z lekarzem",
-        ],
-        hint: "Wpisz np. rozrusznik, implant, kolczyk lub świeże przekłucie w okolicy planowanego zabiegu. Podaj też wcześniejsze zabiegi w tej okolicy i problemy z gojeniem. Nie pytamy o listę wszystkich kolczyków, tatuaży ani wizyt kosmetycznych.",
-      },
+      ...question(
+        "conditionsCheck",
+        "Czy chorujesz przewlekle?",
+        "healthConditions",
+        "Jakie choroby rozpoznano?",
+        "Podaj nazwy, o ile je znasz, np. nadciśnienie lub cukrzyca.",
+      ),
+      ...question(
+        "operationsCheck",
+        "Czy miałeś operację?",
+        "healthOperations",
+        "Jaka operacja i mniej więcej kiedy?",
+        "Uwzględnij również dawne operacje, np. wyrostka. Nie musisz pamiętać dokładnej daty. Kolczyk nie jest tutaj traktowany jako operacja.",
+      ),
+      ...question(
+        "hospitalCheck",
+        "Czy byłeś w szpitalu z innego powodu niż podana operacja?",
+        "healthHospital",
+        "Z jakiego powodu i mniej więcej kiedy?",
+        "Nie musisz powtarzać pobytu związanego z już opisaną operacją.",
+      ),
+      ...question(
+        "medicinesCheck",
+        "Czy przyjmujesz leki?",
+        "healthMedicines",
+        "Jakie leki i dawki, jeśli je znasz?",
+        "Uwzględnij także leki doraźne, bez recepty i stosowane na skórę. Jeśli nie pamiętasz nazw, wybierz odpowiedź o rozmowie z lekarzem.",
+      ),
+      ...question(
+        "supplementsCheck",
+        "Czy stosujesz suplementy lub preparaty ziołowe?",
+        "healthSupplements",
+        "Jakie preparaty?",
+      ),
+      ...question(
+        "allergiesCheck",
+        "Czy znasz u siebie uczulenia?",
+        "healthAllergies",
+        "Na co jesteś uczulony i jakie były objawy?",
+        "Nie musisz samodzielnie rozstrzygać, czy reakcja była alergią — możesz wybrać „Nie wiem”.",
+      ),
+      ...question(
+        "anesthesiaCheck",
+        "Czy wystąpił problem podczas wcześniejszego znieczulenia?",
+        "healthAnesthesia",
+        "Co się wydarzyło?",
+        "Jeśli nigdy nie było znieczulenia, wybierz „Nie dotyczy”.",
+        true,
+      ),
+      ...question(
+        "bleedingCheck",
+        "Czy miałeś nadmierne lub trudne do zatrzymania krwawienie?",
+        "healthBleeding",
+        "W jakiej sytuacji?",
+        "Np. po zabiegu lub usunięciu zęba. Zwykłego drobnego skaleczenia nie musisz opisywać.",
+      ),
+      ...question(
+        "clottingCheck",
+        "Czy rozpoznano u Ciebie zaburzenia krzepnięcia?",
+        "healthClotting",
+        "Jakie zaburzenia?",
+      ),
+      ...question(
+        "thrombosisCheck",
+        "Czy przebyłeś zakrzepicę?",
+        "healthThrombosis",
+        "Kiedy i jak ją leczono?",
+      ),
+      ...question(
+        "embolismCheck",
+        "Czy przebyłeś zatorowość?",
+        "healthEmbolism",
+        "Kiedy i jak ją leczono?",
+      ),
+      ...question(
+        "pregnancyCheck",
+        "Czy jesteś w ciąży lub ciąża jest możliwa?",
+        "healthPregnancy",
+        "Co chcesz przekazać lekarzowi?",
+        "Jeśli pytanie Cię nie dotyczy, wybierz „Nie dotyczy”.",
+        true,
+      ),
+      ...question(
+        "breastfeedingCheck",
+        "Czy karmisz piersią?",
+        "healthBreastfeeding",
+        "Dodatkowa informacja dla lekarza",
+        undefined,
+        true,
+      ),
+      ...question(
+        "devicesCheck",
+        "Czy masz wszczepione urządzenie medyczne?",
+        "healthDevices",
+        "Jakie urządzenie?",
+        "Np. rozrusznik lub inne urządzenie elektroniczne.",
+      ),
+      ...question(
+        "implantsCheck",
+        "Czy masz implant w okolicy planowanego zabiegu?",
+        "healthImplants",
+        "Jaki implant i w którym miejscu?",
+      ),
+      ...question(
+        "piercingCheck",
+        "Czy masz kolczyk lub świeże przekłucie w okolicy zabiegu?",
+        "healthPiercing",
+        "W którym miejscu?",
+        "Nie pytamy o listę wszystkich kolczyków, tatuaży ani wizyt kosmetycznych.",
+      ),
+      ...question(
+        "healingCheck",
+        "Czy wcześniej występowały problemy z gojeniem?",
+        "healthHealing",
+        "Jakie problemy i po czym?",
+      ),
+      ...question(
+        "infectionCheck",
+        "Czy obecnie masz infekcję?",
+        "healthInfection",
+        "Jaką infekcję i czy jest leczona?",
+      ),
+      ...question(
+        "feverCheck",
+        "Czy obecnie masz gorączkę?",
+        "healthFever",
+        "Od kiedy i jaka jest temperatura?",
+      ),
       {
         id: "healthOther",
-        label:
-          "Czy jest coś jeszcze, o czym lekarz powinien wiedzieć przed zabiegiem?",
+        label: "Czy chcesz przekazać coś jeszcze lekarzowi?",
         type: "textarea",
+        quickAnswers: ["Nie mam nic do dodania", "Wolę omówić z lekarzem"],
+      },
+      {
+        id: "concerns",
+        label: "Czego najbardziej się obawiasz?",
+        type: "textarea",
+        hint: "Opcjonalnie. Możesz zaznaczyć potrzebę rozmowy, bez opisywania prywatnych szczegółów.",
         quickAnswers: [
-          "Nie mam nic do dodania",
-          "Nie wiem — omówię z lekarzem",
+          "Nie mam szczególnych obaw",
+          "Obawiam się bólu",
+          "Obawiam się powikłań",
           "Wolę omówić z lekarzem",
         ],
-        hint: "Możesz podać np. obecną infekcję, gorączkę, zmianę skórną w miejscu zabiegu, rozpoznane zakażenie lub ważny wynik badania. Jeśli temat jest dla Ciebie prywatny, wybierz rozmowę z lekarzem.",
+      },
+      {
+        id: "explanationPreference",
+        label: "Jak chcesz omówić zabieg?",
+        type: "choice",
+        buttons: true,
+        options: [
+          "Standardowe omówienie i czas na pytania",
+          "Chcę dokładnie omówić przebieg zabiegu",
+          "Ustalę to z lekarzem",
+        ],
+        hint: "Każdy pacjent otrzymuje istotne informacje o zabiegu i ryzyku. Ten wybór pomaga przygotować rozmowę.",
       },
     ],
   },
@@ -288,7 +403,7 @@ export const intakeForms: {
     ],
   },
 ];
-export const FORM_VERSION = "patient-intake-2026-11-10-v2";
+export const FORM_VERSION = "patient-intake-2026-11-10-v3";
 export function parseFormIds(raw: unknown): FormId[] {
   if (
     !Array.isArray(raw) ||
@@ -305,10 +420,11 @@ export function parseAnswers(
   raw: unknown,
   forms: FormId[],
   final: boolean,
+  schema: IntakeForm[] = intakeForms,
 ): Record<string, string> {
   if (!raw || typeof raw !== "object" || Array.isArray(raw))
     throw new Error("Błędne dane.");
-  const fields = intakeForms
+  const fields = schema
     .filter((f) => forms.includes(f.id))
     .flatMap((f) => f.fields);
   const out: Record<string, string> = {};
@@ -325,12 +441,11 @@ export function parseAnswers(
       throw new Error("Nieprawidłowy wybór.");
     out[k] = v.trim();
   }
+  for (const field of fields)
+    if (!fieldVisible(field, out)) delete out[field.id];
   if (final) {
-    for (const f of fields.filter((f) => f.required))
-      if (!out[f.id])
-        throw new Error(
-          "Uzupełnij imię i nazwisko oraz identyfikator pacjenta.",
-        );
+    for (const f of fields.filter((f) => f.required && fieldVisible(f, out)))
+      if (!out[f.id]) throw new Error("Odpowiedz na pytanie: " + f.label);
     for (const [choice, person] of [
       ["infoChoice", "infoPerson"],
       ["recordsChoice", "recordsPerson"],
@@ -338,7 +453,7 @@ export function parseAnswers(
       if (out[choice] === "Chcę wskazać osobę" && !out[person])
         throw new Error("Podaj osobę upoważnioną.");
   }
-  if (Buffer.byteLength(JSON.stringify(out)) > 32000)
+  if (new TextEncoder().encode(JSON.stringify(out)).length > 32000)
     throw new Error("Za duży formularz.");
   return out;
 }
@@ -368,3 +483,199 @@ export const documentWorkflow = [
     "Odrębne, konkretne, dobrowolne zgody; nie są częścią standardowej ankiety.",
   ],
 ] as const;
+
+export const procedures = [
+  { id: "general", label: "Konsultacja / zabieg do ustalenia" },
+  { id: "botulinum", label: "Toksyna botulinowa" },
+  { id: "filler", label: "Wypełniacz" },
+  { id: "laser", label: "Laseroterapia" },
+  { id: "minor_surgery", label: "Drobny zabieg chirurgiczny" },
+] as const;
+export type ProcedureId = (typeof procedures)[number]["id"];
+export function parseProcedure(value: unknown): ProcedureId {
+  if (value === undefined) return "general";
+  if (!procedures.some((p) => p.id === value))
+    throw Error("Nieznany moduł zabiegu.");
+  return value as ProcedureId;
+}
+const procedureQuestions: Record<ProcedureId, IntakeField[]> = {
+  general: [],
+  botulinum: [
+    ...question(
+      "botulinumPreviousCheck",
+      "Czy wcześniej podawano Ci toksynę botulinową?",
+      "botulinumPrevious",
+      "Kiedy, w jakiej okolicy i jaki preparat, jeśli wiesz?",
+    ),
+    ...question(
+      "botulinumReactionCheck",
+      "Czy po takim zabiegu wystąpiła niepożądana reakcja?",
+      "botulinumReaction",
+      "Jaka reakcja?",
+      undefined,
+      true,
+    ),
+    ...question(
+      "musclesCheck",
+      "Czy rozpoznano u Ciebie chorobę mięśni lub złącza nerwowo-mięśniowego?",
+      "muscles",
+      "Jaką chorobę?",
+    ),
+    ...question(
+      "swallowingCheck",
+      "Czy występują u Ciebie trudności z połykaniem?",
+      "swallowing",
+      "Jakie trudności?",
+    ),
+  ],
+  filler: [
+    ...question(
+      "fillerPreviousCheck",
+      "Czy w okolicy planowanego zabiegu podawano już wypełniacz?",
+      "fillerPrevious",
+      "Gdzie, kiedy i jaki preparat, jeśli wiesz?",
+    ),
+    ...question(
+      "fillerReactionCheck",
+      "Czy po wypełniaczu wystąpiło powikłanie lub niepożądana reakcja?",
+      "fillerReaction",
+      "Co się wydarzyło?",
+      undefined,
+      true,
+    ),
+    ...question(
+      "localSkinCheck",
+      "Czy w miejscu planowanego zabiegu jest obecnie zmiana skórna lub stan zapalny?",
+      "localSkin",
+      "Opisz zmianę własnymi słowami.",
+    ),
+  ],
+  laser: [
+    ...question(
+      "tanningCheck",
+      "Czy ostatnio opalałeś skórę w miejscu planowanego zabiegu?",
+      "tanning",
+      "Kiedy ostatnio i w jaki sposób?",
+      "Uwzględnij słońce i solarium.",
+    ),
+    ...question(
+      "herpesCheck",
+      "Czy miewasz opryszczkę?",
+      "herpes",
+      "Gdzie i kiedy ostatnio?",
+    ),
+    ...question(
+      "lightReactionCheck",
+      "Czy wystąpiła wcześniej nietypowa reakcja skóry na światło?",
+      "lightReaction",
+      "Jaka reakcja?",
+    ),
+    ...question(
+      "laserPreviousCheck",
+      "Czy w tej okolicy był już zabieg laserowy?",
+      "laserPrevious",
+      "Jaki, kiedy i czy wystąpiły problemy?",
+    ),
+    ...question(
+      "localSkinCheck",
+      "Czy w miejscu planowanego zabiegu jest obecnie zmiana skórna lub stan zapalny?",
+      "localSkin",
+      "Opisz zmianę własnymi słowami.",
+    ),
+  ],
+  minor_surgery: [
+    ...question(
+      "localProcedureCheck",
+      "Czy wcześniej operowano lub leczono zabiegowo tę okolicę?",
+      "localProcedure",
+      "Jaki zabieg i kiedy?",
+    ),
+    ...question(
+      "localSkinCheck",
+      "Czy w miejscu planowanego zabiegu jest obecnie zmiana skórna lub stan zapalny?",
+      "localSkin",
+      "Opisz zmianę własnymi słowami.",
+    ),
+  ],
+};
+export function schemaForProcedure(procedure: ProcedureId): IntakeForm[] {
+  return intakeForms.map((f) =>
+    f.id === "health"
+      ? {
+          ...f,
+          fields: [
+            ...f.fields.filter(
+              (q) => !["concerns", "explanationPreference"].includes(q.id),
+            ),
+            ...procedureQuestions[procedure],
+            ...f.fields.filter((q) =>
+              ["concerns", "explanationPreference"].includes(q.id),
+            ),
+          ],
+        }
+      : f,
+  );
+}
+export type SchemaPacket = {
+  forms: FormId[];
+  formVersion: string;
+  schema?: IntakeForm[];
+  procedure?: ProcedureId;
+};
+export function packetForms(packet: SchemaPacket): IntakeForm[] {
+  const schema =
+    packet.schema ??
+    (packet.formVersion === FORM_VERSION
+      ? schemaForProcedure(packet.procedure ?? "general")
+      : packet.formVersion === "patient-intake-2026-11-10-v1"
+        ? legacyV1Forms
+        : legacyForms);
+  return schema.filter((f) => packet.forms.includes(f.id));
+}
+export function fieldVisible(
+  field: IntakeField,
+  answers: Record<string, string>,
+): boolean {
+  return (
+    !field.when || field.when.values.includes(answers[field.when.id] ?? "")
+  );
+}
+export function updateAnswer(
+  answers: Record<string, string>,
+  id: string,
+  value: string,
+  schema: IntakeForm[],
+): Record<string, string> {
+  const next = { ...answers, [id]: value };
+  for (const field of schema.flatMap((f) => f.fields))
+    if (!fieldVisible(field, next)) delete next[field.id];
+  return next;
+}
+export function attentionItems(
+  schema: IntakeForm[],
+  answers: Record<string, string>,
+) {
+  return schema
+    .flatMap((f) => f.fields)
+    .filter(
+      (f) =>
+        fieldVisible(f, answers) &&
+        answers[f.id] &&
+        ((f.buttons &&
+          (answers[f.id] === "Tak" || /omówi|dokładnie/.test(answers[f.id]))) ||
+          (f.id === "concerns" &&
+            answers[f.id] !== "Nie mam szczególnych obaw") ||
+          (f.id === "explanationPreference" &&
+            answers[f.id] === "Chcę dokładnie omówić przebieg zabiegu")),
+    )
+    .map((f) => ({
+      label: f.label,
+      value: answers[f.id],
+      detail: schema
+        .flatMap((f) => f.fields)
+        .filter((d) => d.when?.id === f.id)
+        .map((d) => answers[d.id])
+        .filter(Boolean)
+        .join("; "),
+    }));
+}

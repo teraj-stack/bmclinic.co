@@ -37,7 +37,8 @@ with tempfile.TemporaryDirectory() as tmp:
    assert req('/api/intake/open',{'token':invite['token'],'pin':invite['pin']})[0]==401
    s,b,h=req('/api/intake/session');assert s==200,b
    assert 'no-store' in h['Cache-Control'] and h['Referrer-Policy']=='no-referrer'
-   revision=b['packet']['revision'];answers={'patientName':'Synthetic Patient 743','identifier':'test identifier','healthReason':'Synthetic symptom'}
+   revision=b['packet']['revision'];schema=b['packet']['schema'];answers={'patientName':'Synthetic Patient 743','identifier':'test identifier','healthReason':'Synthetic symptom'}
+   answers.update({f['id']:'Nie' for form in schema if form['id']=='health' for f in form['fields'] if f.get('buttons') and f.get('required')})
    s,b,_=req('/api/intake/session',{'action':'draft','answers':answers,'revision':revision});assert s==200,b
    assert req('/api/intake/session',{'action':'draft','answers':answers,'revision':revision})[0]==400
    revision=b['revision']
@@ -46,7 +47,13 @@ with tempfile.TemporaryDirectory() as tmp:
    s,b,_=req('/api/intake-admin/packets');assert s==200 and 'Synthetic Patient' not in json.dumps(b)
    s,b,_=req('/api/intake-admin/packets/'+pid);assert s==200 and b['packet']['answers']==answers,b
    assert req('/api/intake-admin/packets/'+pid,{'action':'review','identityChecked':True,'importConfirmed':True,'recordReference':'TEST-EDM-1'})[0]==200
-   assert req('/api/intake-admin/packets/'+pid,{'action':'revoke'})[0]==200
+   assert req('/api/intake-admin/packets/'+pid,{'action':'followUp'})[0]==400
+   status,follow,_=req('/api/intake-admin/packets/'+pid,{'action':'followUp','identityChecked':True});assert status==200,follow
+   fi=follow['invitation'];assert req('/api/intake/open',{'token':fi['token'],'pin':fi['pin']})[0]==200
+   status,follow,_=req('/api/intake/session');assert follow['packet']['previous']['packetId']==pid
+   assert req('/api/intake/session',{'action':'submit','answers':answers,'revision':0})[0]==400
+   assert req('/api/intake/session',{'action':'submit','answers':answers,'revision':0,'reviewedPrevious':True})[0]==200
+   assert req('/api/intake-admin/packets/'+fi['id'],{'action':'revoke'})[0]==200
    assert req('/api/intake/session')[0]==401
    assert req('/pacjent')[2]['Referrer-Policy']=='no-referrer'
    print('PASS: production intake, MFA, CSRF, single-use invitation, encrypted draft, revision conflict, locked submission, staff review, revocation and privacy headers')
