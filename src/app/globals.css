@@ -638,3 +638,39 @@ textarea:focus {
   color: var(--ink);
   border-color: var(--line);
 }
+.scene-entrance {
+  position: absolute;
+  top: 30%;
+  width: 8.4%;
+  height: 26%;
+  border-radius: 12px;
+  border: 2px solid transparent;
+  transition:
+    background 0.2s,
+    border-color 0.2s;
+}
+.scene-entrance:hover {
+  border-color: #ead5ae;
+  background: #fff1;
+}
+.scene-entrance:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 2px;
+  background: #fff2;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+@media (max-width: 650px) {
+  .scene-hotspots {
+    display: none;
+  }
+}

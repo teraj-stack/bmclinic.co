@@ -13,6 +13,19 @@ export default function Home() {
           priority
           sizes="100vw"
         />
+        <nav className="scene-hotspots" aria-label="Wejścia do działów kliniki">
+          {departments.map((d, i) => (
+            <Link
+              key={d.id}
+              href={"/" + d.id}
+              className="scene-entrance"
+              style={{ left: `${53.2 + i * 9.5}%` }}
+              aria-label={"Wejdź: " + d.name}
+            >
+              <span className="sr-only">{d.name}</span>
+            </Link>
+          ))}
+        </nav>
         <div className="scene-caption">
           SKY LOBBY · WIRTUALNA PRZESTRZEŃ BM CLINIC
         </div>
