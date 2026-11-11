@@ -13,6 +13,9 @@ import BmClinicSpatialModel3D, {
 } from '@/components/BmClinicSpatialModel3D';
 import BmClinicLidarDiagnosticAnalyzer from '@/components/BmClinicLidarDiagnosticAnalyzer';
 import BmClinicPricingAndRecoveryCalculator from '@/components/BmClinicPricingAndRecoveryCalculator';
+import BmClinicMobileTransitionShell, {
+  runViewTransitionWithHaptics,
+} from '@/components/BmClinicMobileTransitionShell';
 import Link from 'next/link';
 
 interface BmClinicPageEntry {
@@ -183,21 +186,34 @@ export default function BmClinicHomePage() {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto grid gap-8">
-        {/* 4 Department Cards (Bento Grid) */}
-        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <main className="max-w-7xl mx-auto grid gap-8 pb-24">
+        {/* Dynamic Island + Shared-Element Mobile Transitions + Gesture Bottom Sheet + Floating Dock */}
+        <BmClinicMobileTransitionShell
+          selectedDept={selectedDept}
+          onSelectDepartment={(dept) => setSelectedDept(dept)}
+          highContrastViMode={highContrastViMode}
+        />
+
+        {/* 4 Department Cards (Bento Grid with Shared-Element View Transition Morphing) */}
+        <section
+          id="section-departments"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+        >
           {DEPARTMENTS.map((dept) => {
             const active = selectedDept === dept.name;
             return (
               <button
                 key={dept.name}
                 type="button"
-                onClick={() => setSelectedDept(dept.name)}
-                className={`text-left p-5 rounded-3xl border transition-all ${
+                style={{ viewTransitionName: `bento-dept-${dept.slug.replace('/', '')}` }}
+                onClick={() =>
+                  runViewTransitionWithHaptics(() => setSelectedDept(dept.name), 12)
+                }
+                className={`text-left p-5 rounded-3xl border transition-all active:scale-[0.98] ${
                   active
                     ? highContrastViMode
                       ? 'bg-[#ffe600] text-black border-white font-bold'
-                      : 'bg-cyan-500/15 border-cyan-400 shadow-xl'
+                      : 'bg-cyan-500/15 border-cyan-400 shadow-xl scale-[1.01]'
                     : 'bg-white/5 border-white/10 hover:border-cyan-400/50'
                 }`}
               >
@@ -223,28 +239,39 @@ export default function BmClinicHomePage() {
         </section>
 
         {/* Interactive 3D Spatial Clinic Digital Twin & VI Wayfinding Model */}
-        <BmClinicSpatialModel3D
-          selectedDept={selectedDept}
-          onSelectDepartment={(dept) => setSelectedDept(dept)}
-          highContrastViMode={highContrastViMode}
-          onToggleViMode={() => setHighContrastViMode((v) => !v)}
-        />
+        <div id="section-3d-clinic">
+          <BmClinicSpatialModel3D
+            selectedDept={selectedDept}
+            onSelectDepartment={(dept) =>
+              runViewTransitionWithHaptics(() => setSelectedDept(dept), 10)
+            }
+            highContrastViMode={highContrastViMode}
+            onToggleViMode={() => setHighContrastViMode((v) => !v)}
+          />
+        </div>
 
         {/* 6-Parameter 3D/LiDAR Clinical Diagnostic Simulator */}
-        <BmClinicLidarDiagnosticAnalyzer
-          selectedDept={selectedDept}
-          highContrastViMode={highContrastViMode}
-        />
+        <div id="section-lidar">
+          <BmClinicLidarDiagnosticAnalyzer
+            selectedDept={selectedDept}
+            highContrastViMode={highContrastViMode}
+          />
+        </div>
 
         {/* Transparent Pricing & Recovery Time Calculator */}
-        <BmClinicPricingAndRecoveryCalculator
-          selectedDept={selectedDept}
-          basePricePln={basePrice}
-          highContrastViMode={highContrastViMode}
-        />
+        <div id="section-calculator">
+          <BmClinicPricingAndRecoveryCalculator
+            selectedDept={selectedDept}
+            basePricePln={basePrice}
+            highContrastViMode={highContrastViMode}
+          />
+        </div>
 
         {/* Add Procedure to Clean Foundation Database */}
-        <section className="rounded-3xl border border-cyan-500/25 bg-white/5 backdrop-blur-xl p-6">
+        <section
+          id="section-database"
+          className="rounded-3xl border border-cyan-500/25 bg-white/5 backdrop-blur-xl p-6"
+        >
           <h2 className="text-lg font-bold text-cyan-300 mb-4">
             + Dodaj usługę medyczną w dziale: {selectedDept} (Czysty Fundament Bazy bmclinic.co)
           </h2>
