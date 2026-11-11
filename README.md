@@ -1,11 +1,11 @@
-# BM Clinic (`bmclinic.co`) — Next.js 15 Flagship Medical Platform, 3D Digital Twin, VI HRTF Wayfinding & AI SEO Engine
+# BM Clinic (`bmclinic.co`) — Platforma Medyczna Next.js 15, Cyfrowy Bliźniak 3D, Nawigacja HRTF dla Niewidomych i Silnik AI SEO
 
 [![Next.js 15](https://img.shields.io/badge/Next.js-15.1_App_Router-black?logo=next.js)](https://nextjs.org/)
 [![React 19](https://img.shields.io/badge/React-19.0-149eca?logo=react)](https://react.dev/)
 [![TypeScript 5.7](https://img.shields.io/badge/TypeScript-5.7-3178c6?logo=typescript)](https://www.typescriptlang.org/)
-[![WCAG 2.1 AAA](https://img.shields.io/badge/Accessibility-WCAG_2.1_AAA_%2B_HRTF_Audio-10b981)](#3-cyfrowy-bliźniak-3d-kliniki--nawigacja-dla-osób-niewidomych-vi-wayfinding)
-[![Medical SEO & GEO](https://img.shields.io/badge/SEO-NavBoost_%7C_E--E--A--T_%7C_AI_Overviews-6366f1)](#6-silnik-ai-seo--conversion-intelligence-ymyl--e-e-a-t)
-[![Vercel Ready](https://img.shields.io/badge/Deploy-Vercel_Staged_Production-000000?logo=vercel)](#8-wdrożenie-i-budowanie-na-vercel-staged-production)
+[![WCAG 2.1 AAA](https://img.shields.io/badge/Dostępność-WCAG_2.1_AAA_%2B_Audio_HRTF_3D-10b981)](#3-cyfrowy-bliźniak-3d-kliniki--nawigacja-dla-osób-niewidomych-vi-wayfinding)
+[![Medyczne SEO i GEO](https://img.shields.io/badge/SEO-NavBoost_%7C_E--E--A--T_%7C_AI_Overviews-6366f1)](#6-silnik-ai-seo--conversion-intelligence-ymyl--e-e-a-t)
+[![Gotowe na Vercel](https://img.shields.io/badge/Wdrożenie-Vercel_Staged_Production-000000?logo=vercel)](#8-uruchomienie-lokalne-i-wdrożenie-na-vercel-staged-production)
 
 Kompletna, flagowa platforma medyczna **Next.js 15 (App Router, React 19, TypeScript, Tailwind CSS)** stworzona dla **BM Clinic (`bmclinic.co` — Klinika Chirurgii Małoinwazyjnej, Flebologii, Proktologii i Medycyny Estetycznej)**. Projekt łączy architekturę **Medical SEO / Generative Engine Optimization (GEO / Google AI Overviews)** z interaktywnym **Cyfrowym Bliźniakiem 3D kliniki**, nawigacją dźwiękową **3D Web Audio HRTF dla pacjentów niewidomych i słabowidzących**, **6-parametrowym analizatorem diagnostycznym 3D LiDAR**, wizualizatorem impulsów lasera **1470 nm / 980 nm** oraz widokiem paralaksy 3D z okien i otwartego świetlika dachowego kliniki.
 
