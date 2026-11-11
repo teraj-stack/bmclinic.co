@@ -1,8 +1,25 @@
 import type { MetadataRoute } from 'next';
+import { DEPARTMENT_LIST } from '@/lib/clinic-departments-data';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://bmclinic.co';
   const now = new Date();
+
+  const departmentEntries: MetadataRoute.Sitemap = DEPARTMENT_LIST.map((dept) => ({
+    url: `${baseUrl}/${dept.slug}`,
+    lastModified: now,
+    changeFrequency: 'weekly',
+    priority: 0.9,
+  }));
+
+  const procedureEntries: MetadataRoute.Sitemap = DEPARTMENT_LIST.flatMap((dept) =>
+    dept.procedures.map((proc) => ({
+      url: `${baseUrl}/procedury/${proc.slug}`,
+      lastModified: now,
+      changeFrequency: 'weekly',
+      priority: 0.85,
+    }))
+  );
 
   return [
     {
@@ -11,29 +28,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'daily',
       priority: 1.0,
     },
-    {
-      url: `${baseUrl}/medycyna-estetyczna`,
-      lastModified: now,
-      changeFrequency: 'weekly',
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/flebologia`,
-      lastModified: now,
-      changeFrequency: 'weekly',
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/proktologia`,
-      lastModified: now,
-      changeFrequency: 'weekly',
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/chirurgia-ogolna`,
-      lastModified: now,
-      changeFrequency: 'weekly',
-      priority: 0.9,
-    },
+    ...departmentEntries,
+    ...procedureEntries,
   ];
 }

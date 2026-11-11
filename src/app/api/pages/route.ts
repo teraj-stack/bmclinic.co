@@ -7,13 +7,15 @@ import {
   type BmClinicTelemetry,
 } from '@/lib/seo-scoring-engine';
 
-const STATE_PATH = path.join(process.cwd(), 'public', 'bmclinic_agent_state.json');
+const PUBLIC_STATE_PATH = path.join(process.cwd(), 'public', 'bmclinic_agent_state.json');
+const TMP_STATE_PATH = '/tmp/bmclinic_agent_state.json';
 
-interface StoredAgentPage {
+export interface StoredAgentPage {
   id: number;
   page: BmClinicPageConfig;
   telemetry: BmClinicTelemetry;
   metrics: ReturnType<typeof evaluateBmClinicPageForAgent>;
+  insight?: string;
   createdAt: string;
 }
 
@@ -23,20 +25,25 @@ function readAgentState(): {
   generated_at: string;
   pages: StoredAgentPage[];
 } {
-  try {
-    if (fs.existsSync(STATE_PATH)) {
-      const raw = fs.readFileSync(STATE_PATH, 'utf-8');
-      const parsed = JSON.parse(raw);
-      return {
-        domain: 'bmclinic.co',
-        status: parsed.status || 'CLEAN_FOUNDATION_NO_PRELOADED_PILLARS',
-        generated_at: parsed.generated_at || new Date().toISOString(),
-        pages: Array.isArray(parsed.pages) ? parsed.pages : [],
-      };
+  // Prefer writable /tmp state on Vercel serverless if already initialized, then fall back to public/
+  const candidatePaths = [TMP_STATE_PATH, PUBLIC_STATE_PATH];
+  for (const filePath of candidatePaths) {
+    try {
+      if (fs.existsSync(filePath)) {
+        const raw = fs.readFileSync(filePath, 'utf-8');
+        const parsed = JSON.parse(raw);
+        return {
+          domain: 'bmclinic.co',
+          status: parsed.status || 'CLEAN_FOUNDATION_NO_PRELOADED_PILLARS',
+          generated_at: parsed.generated_at || new Date().toISOString(),
+          pages: Array.isArray(parsed.pages) ? parsed.pages : [],
+        };
+      }
+    } catch {
+      // Continue to next fallback
     }
-  } catch {
-    // Fallback to clean empty foundation
   }
+
   return {
     domain: 'bmclinic.co',
     status: 'CLEAN_FOUNDATION_NO_PRELOADED_PILLARS',
@@ -48,12 +55,29 @@ function readAgentState(): {
 function writeAgentState(pages: StoredAgentPage[]) {
   const payload = {
     domain: 'bmclinic.co',
-    status: pages.length === 0 ? 'CLEAN_FOUNDATION_NO_PRELOADED_PILLARS' : 'ACTIVE_TELEMETRY_ENGINE',
+    status:
+      pages.length === 0
+        ? 'CLEAN_FOUNDATION_NO_PRELOADED_PILLARS'
+        : 'ACTIVE_TELEMETRY_ENGINE',
     generated_at: new Date().toISOString(),
     pages,
   };
-  fs.mkdirSync(path.dirname(STATE_PATH), { recursive: true });
-  fs.writeFileSync(STATE_PATH, JSON.stringify(payload, null, 2), 'utf-8');
+
+  // Always write to /tmp (writable in Vercel Serverless / Fluid Compute)
+  try {
+    fs.writeFileSync(TMP_STATE_PATH, JSON.stringify(payload, null, 2), 'utf-8');
+  } catch {
+    // Ignore if /tmp unavailable
+  }
+
+  // Also write to public/ when running in local writable development environment
+  try {
+    fs.mkdirSync(path.dirname(PUBLIC_STATE_PATH), { recursive: true });
+    fs.writeFileSync(PUBLIC_STATE_PATH, JSON.stringify(payload, null, 2), 'utf-8');
+  } catch {
+    // Ignore EROFS on Vercel read-only lambda filesystem
+  }
+
   return payload;
 }
 
@@ -76,6 +100,7 @@ export async function POST(request: Request) {
       page,
       telemetry,
       metrics,
+      insight: body.insight,
       createdAt: new Date().toISOString(),
     };
 
@@ -90,7 +115,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: true, state: updated, record: newRecord });
   } catch (error) {
     return NextResponse.json(
-      { ok: false, error: error instanceof Error ? error.message : 'Błąd zapisu strony bmclinic.co' },
+      {
+        ok: false,
+        error: error instanceof Error ? error.message : 'Błąd zapisu strony bmclinic.co',
+      },
       { status: 500 }
     );
   }

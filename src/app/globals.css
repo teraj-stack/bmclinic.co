@@ -1,0 +1,56 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-obsidian: #060b14;
+  --warm-champagne: #e2c799;
+  --electric-cyan: #00e5ff;
+  --surgical-lime: #b8ff01;
+  --spring-snappy: linear(
+    0, 0.009, 0.035 2.1%, 0.141, 0.281 6.7%, 0.723 12.9%, 0.938 16.7%,
+    1.017, 1.077, 1.121, 1.149 24.3%, 1.159, 1.163, 1.161, 1.154 29.9%,
+    1.129 32.8%, 1.051 39.6%, 1.017 43.1%, 0.991, 0.977 51%, 0.974 53.8%,
+    0.975 57.1%, 0.997 69.8%, 1.003 76.9%, 1
+  );
+  --spring-fluid: linear(
+    0, 0.012, 0.049 2.4%, 0.196 5.6%, 0.618 12.4%, 0.871 16.9%,
+    1.004 20.6%, 1.064 23.6%, 1.084 26.2%, 1.077 29.8%, 1.014 41.2%,
+    0.991 49.4%, 0.996 62%, 1
+  );
+}
+
+html {
+  scroll-behavior: smooth;
+  color-scheme: dark;
+}
+
+body {
+  background:
+    radial-gradient(circle at 12% 14%, rgba(21, 197, 197, 0.14), transparent 38%),
+    radial-gradient(circle at 86% 18%, rgba(226, 199, 153, 0.11), transparent 42%),
+    radial-gradient(circle at 50% 88%, rgba(106, 133, 255, 0.09), transparent 45%),
+    var(--bg-obsidian);
+  color: #f8fafc;
+  min-height: 100vh;
+}
+
+.liquid-glass-surface {
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.085), rgba(255, 255, 255, 0.02));
+  backdrop-filter: blur(24px) saturate(165%);
+  -webkit-backdrop-filter: blur(24px) saturate(165%);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow:
+    inset 0 2px 3px rgba(255, 255, 255, 0.28),
+    inset 0 -3px 8px rgba(15, 23, 42, 0.5),
+    0 20px 44px -12px rgba(0, 0, 0, 0.65);
+}
+
+@view-transition {
+  navigation: auto;
+}
+
+::view-transition-group(*) {
+  animation-duration: 460ms;
+  animation-timing-function: var(--spring-fluid, cubic-bezier(0.22, 1, 0.36, 1));
+}
