@@ -183,101 +183,163 @@ export default function BmClinicInitialModulesSuite({
       let dy = 0;
       let zoom = 1;
       if (trajectory === 'CIRCLE') {
-        dx = Math.cos(t) * 18;
-        dy = Math.sin(t) * 10;
+        dx = Math.cos(t) * 24 + mouseOffset.x * 20;
+        dy = Math.sin(t) * 14 + mouseOffset.y * 12;
       } else if (trajectory === 'SWAY') {
-        dx = Math.sin(t * 0.85) * 24;
-        dy = Math.cos(t * 0.4) * 4;
+        dx = Math.sin(t * 0.85) * 30 + mouseOffset.x * 20;
+        dy = Math.cos(t * 0.4) * 6 + mouseOffset.y * 12;
       } else if (trajectory === 'FIGURE_8') {
-        dx = Math.sin(t) * 22;
-        dy = Math.sin(t * 2) * 9;
+        dx = Math.sin(t) * 28 + mouseOffset.x * 20;
+        dy = Math.sin(t * 2) * 12 + mouseOffset.y * 12;
       } else if (trajectory === 'BREATH') {
-        zoom = 1 + Math.sin(t * 0.9) * 0.045;
-        dy = Math.sin(t * 0.9) * 6;
+        zoom = 1 + Math.sin(t * 0.9) * 0.05;
+        dx = mouseOffset.x * 20;
+        dy = Math.sin(t * 0.9) * 8 + mouseOffset.y * 12;
       } else {
-        dx = mouseOffset.x * 26;
-        dy = mouseOffset.y * 16;
+        dx = mouseOffset.x * 38;
+        dy = mouseOffset.y * 24;
       }
 
-      // Sky gradient per time of day
-      const sky = ctx.createLinearGradient(0, 0, 0, h);
+      // Clinic Interior Wall & Open Ceiling Skylight ("Zdejmij sufit")
+      const wallGrad = ctx.createLinearGradient(0, 0, 0, h);
       if (highContrastViMode) {
-        sky.addColorStop(0, '#05070a');
-        sky.addColorStop(1, '#05070a');
-      } else if (windowTime === 'DAWN') {
-        sky.addColorStop(0, '#1e293b');
-        sky.addColorStop(0.55, '#475569');
-        sky.addColorStop(1, '#f59e0b');
-      } else if (windowTime === 'NOON') {
-        sky.addColorStop(0, '#0c4a6e');
-        sky.addColorStop(0.6, '#0284c7');
-        sky.addColorStop(1, '#bae6fd');
-      } else if (windowTime === 'GOLDEN') {
-        sky.addColorStop(0, '#1e1b4b');
-        sky.addColorStop(0.5, '#7c2d12');
-        sky.addColorStop(1, '#fbbf24');
+        wallGrad.addColorStop(0, '#05070a');
+        wallGrad.addColorStop(1, '#05070a');
+      } else if (windowTime === 'TWILIGHT') {
+        wallGrad.addColorStop(0, '#0f172a');
+        wallGrad.addColorStop(1, '#020617');
       } else {
-        sky.addColorStop(0, '#020617');
-        sky.addColorStop(0.6, '#0f172a');
-        sky.addColorStop(1, '#1e1b4b');
+        wallGrad.addColorStop(0, '#1e293b');
+        wallGrad.addColorStop(1, '#0f172a');
       }
-      ctx.fillStyle = sky;
+      ctx.fillStyle = wallGrad;
       ctx.fillRect(0, 0, w, h);
 
-      // Sun / Moon orb with depth parallax (Layer 1 — Far depth)
-      const sunX = w * 0.72 + dx * 0.35;
-      const sunY = h * 0.32 + dy * 0.35;
-      const sunGrad = ctx.createRadialGradient(sunX, sunY, 4, sunX, sunY, 64 * zoom);
-      sunGrad.addColorStop(
+      // Open Ceiling Skylight Aperture & Roof Trusses at Top
+      const skyGlow = ctx.createLinearGradient(0, 0, 0, 48);
+      skyGlow.addColorStop(
         0,
         highContrastViMode
-          ? '#ffe600'
-          : windowTime === 'TWILIGHT'
-          ? '#38bdf8'
-          : '#fef08a'
+          ? 'rgba(255,230,0,0.28)'
+          : windowTime === 'GOLDEN'
+          ? 'rgba(251,191,36,0.38)'
+          : 'rgba(56,189,248,0.38)'
       );
-      sunGrad.addColorStop(1, 'transparent');
-      ctx.fillStyle = sunGrad;
-      ctx.beginPath();
-      ctx.arc(sunX, sunY, 64 * zoom, 0, Math.PI * 2);
-      ctx.fill();
+      skyGlow.addColorStop(1, 'transparent');
+      ctx.fillStyle = skyGlow;
+      ctx.fillRect(0, 0, w, 48);
 
-      // Parallax Architectural Skyline / Park Trees outside Clinic Windows (Layer 2 & 3)
-      for (let depthLayer = 1; depthLayer <= 2; depthLayer++) {
-        const factor = depthLayer === 1 ? 0.65 : 1.15;
-        ctx.fillStyle = highContrastViMode
-          ? depthLayer === 1
-            ? 'rgba(255,230,0,0.2)'
-            : 'rgba(0,245,212,0.3)'
-          : depthLayer === 1
-          ? 'rgba(15, 23, 42, 0.55)'
-          : 'rgba(6, 11, 20, 0.85)';
+      // 3 Spaced Panoramic Arched Windows ("Okna nie stykają się; obraz przesuwa się tylko za oknami")
+      const windows = [
+        { x: 26, y: 34, ww: 192, wh: h - 46, label: 'Widok Wschodni' },
+        { x: 244, y: 28, ww: 192, wh: h - 40, label: 'Główne Atrium' },
+        { x: 462, y: 34, ww: 192, wh: h - 46, label: 'Widok Zachodni' },
+      ];
 
-        for (let i = -1; i < 9; i++) {
-          const bx = i * 74 + dx * factor;
-          const bh = 42 + ((i * 37 + depthLayer * 19) % 58);
-          ctx.fillRect(bx, h - bh + dy * factor * 0.4, 56, bh + 20);
-        }
-      }
-
-      // Clinic Panoramic Window Mullions (Foreground Layer 4)
-      ctx.strokeStyle = highContrastViMode
-        ? '#ffe600'
-        : 'rgba(255, 255, 255, 0.24)';
-      ctx.lineWidth = 3;
-      [0.25, 0.5, 0.75].forEach((ratio) => {
+      windows.forEach((win, idx) => {
+        ctx.save();
+        // Rounded arch path
+        const r = 34;
         ctx.beginPath();
-        ctx.moveTo(w * ratio, 0);
-        ctx.lineTo(w * ratio, h);
+        ctx.moveTo(win.x, win.y + r);
+        ctx.quadraticCurveTo(win.x + win.ww / 2, win.y - 16, win.x + win.ww, win.y + r);
+        ctx.lineTo(win.x + win.ww, win.y + win.wh);
+        ctx.lineTo(win.x, win.y + win.wh);
+        ctx.closePath();
+        ctx.clip();
+
+        // Sky gradient per time of day inside window
+        const sky = ctx.createLinearGradient(0, win.y, 0, win.y + win.wh);
+        if (highContrastViMode) {
+          sky.addColorStop(0, '#05070a');
+          sky.addColorStop(1, '#05070a');
+        } else if (windowTime === 'DAWN') {
+          sky.addColorStop(0, '#be185d');
+          sky.addColorStop(0.55, '#fb923c');
+          sky.addColorStop(1, '#fef08a');
+        } else if (windowTime === 'NOON') {
+          sky.addColorStop(0, '#0284c7');
+          sky.addColorStop(0.6, '#38bdf8');
+          sky.addColorStop(1, '#e0f2fe');
+        } else if (windowTime === 'GOLDEN') {
+          sky.addColorStop(0, '#7c2d12');
+          sky.addColorStop(0.5, '#f59e0b');
+          sky.addColorStop(1, '#fde68a');
+        } else {
+          sky.addColorStop(0, '#020617');
+          sky.addColorStop(0.6, '#1e1b4b');
+          sky.addColorStop(1, '#312e81');
+        }
+        ctx.fillStyle = sky;
+        ctx.fillRect(win.x, win.y, win.ww, win.wh);
+
+        // Sun / Moon orb with depth parallax (Far layer 0.3x)
+        const sunX = win.x + win.ww * 0.62 - dx * 0.32 + (idx - 1) * 14;
+        const sunY = win.y + 48 - dy * 0.28;
+        const sunGrad = ctx.createRadialGradient(sunX, sunY, 2, sunX, sunY, 36 * zoom);
+        sunGrad.addColorStop(
+          0,
+          highContrastViMode
+            ? '#ffe600'
+            : windowTime === 'TWILIGHT'
+            ? '#e2e8f0'
+            : '#fef08a'
+        );
+        sunGrad.addColorStop(1, 'transparent');
+        ctx.fillStyle = sunGrad;
+        ctx.beginPath();
+        ctx.arc(sunX, sunY, 36 * zoom, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Multi-plane Parallax Skyline & Park Trees strictly behind each window
+        for (let depthLayer = 1; depthLayer <= 3; depthLayer++) {
+          const factor = depthLayer === 1 ? 0.55 : depthLayer === 2 ? 0.95 : 1.35;
+          ctx.fillStyle = highContrastViMode
+            ? depthLayer === 1
+              ? 'rgba(255,230,0,0.22)'
+              : 'rgba(0,245,212,0.38)'
+            : depthLayer === 1
+            ? 'rgba(51, 65, 85, 0.55)'
+            : depthLayer === 2
+            ? 'rgba(15, 23, 42, 0.82)'
+            : 'rgba(15, 118, 110, 0.78)';
+
+          for (let i = -2; i < 7; i++) {
+            const bx = win.x + i * 44 - dx * factor;
+            const bh = 28 + ((i * 29 + depthLayer * 17 + idx * 11) % 54);
+            ctx.fillRect(bx, win.y + win.wh - bh - dy * factor * 0.45, 34, bh + 20);
+          }
+        }
+
+        // Window label badge at bottom of window
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.72)';
+        ctx.fillRect(win.x + 8, win.y + win.wh - 24, win.ww - 16, 18);
+        ctx.fillStyle = highContrastViMode ? '#ffe600' : '#f8fafc';
+        ctx.font = 'bold 10px monospace';
+        ctx.fillText(`☀️ ${win.label}`, win.x + 14, win.y + win.wh - 11);
+
+        ctx.restore();
+
+        // Architectural Frame Border
+        ctx.strokeStyle = highContrastViMode
+          ? '#ffe600'
+          : 'rgba(255, 255, 255, 0.45)';
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.moveTo(win.x, win.y + r);
+        ctx.quadraticCurveTo(win.x + win.ww / 2, win.y - 16, win.x + win.ww, win.y + r);
+        ctx.lineTo(win.x + win.ww, win.y + win.wh);
+        ctx.lineTo(win.x, win.y + win.wh);
+        ctx.closePath();
         ctx.stroke();
       });
 
-      ctx.fillStyle = highContrastViMode ? '#ffe600' : '#f8fafc';
-      ctx.font = 'bold 11px monospace';
+      ctx.fillStyle = highContrastViMode ? '#ffe600' : '#bae6fd';
+      ctx.font = 'bold 10px monospace';
       ctx.fillText(
-        `OKNA PARALAKSY 3D KLINIKI • PORA: ${windowTime} • RUCH: ${trajectory}`,
-        14,
-        22
+        `OTWARTY SUFIT + 3 OKNA PARALAKSY 3D • PORA: ${windowTime} • RUCH: ${trajectory}`,
+        16,
+        16
       );
 
       animId = requestAnimationFrame(renderParallaxWindow);
