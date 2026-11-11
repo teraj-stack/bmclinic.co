@@ -1,13 +1,15 @@
+export type ContentArchetype =
+  | 'INTERACTIVE_3D_PROCEDURE_MODEL'
+  | 'TRANSPARENT_PRICING_CALCULATOR'
+  | 'DOCTOR_QA_CASE_STUDY_BEFORE_AFTER'
+  | 'SPATIAL_3D_CLINIC_TOUR';
+
 export interface BmClinicPageConfig {
   slug: string;
   urlPath: string;
   servicePillar: string;
   procedureTitle: string;
-  contentArchetype:
-    | 'INTERACTIVE_3D_PROCEDURE_MODEL'
-    | 'TRANSPARENT_PRICING_CALCULATOR'
-    | 'DOCTOR_QA_CASE_STUDY_BEFORE_AFTER'
-    | 'SPATIAL_3D_CLINIC_TOUR';
+  contentArchetype: ContentArchetype;
   h1Headline: string;
   h2AioQuestion: string;
   aioDirectAnswerPassage: string;

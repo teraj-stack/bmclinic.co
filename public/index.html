@@ -278,6 +278,58 @@
       </div>
     </section>
 
+    <!-- Interaktywny Model 3D Kliniki (Cyfrowy Bliźniak 3D + Nawigacja VI HRTF + LiDAR WHI 3D) -->
+    <section class="liquid-glass" style="padding:22px; margin-bottom:24px;">
+      <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:12px; margin-bottom:14px;">
+        <div>
+          <span class="dept-badge" style="margin-bottom:4px;">CYFROWY BLIŹNIAK 3D • LIQUID GLASS HUD • NAWIGACJA VI (HRTF AUDIO + BRAILLE + WCAG AAA)</span>
+          <h2 style="font-size:19px; font-weight:800;">Przestrzenny Model 3D Kliniki bmclinic.co (4 Gabinety Zabiegowe + Skaner 3D LiDAR)</h2>
+        </div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button class="btn" onclick="start3dWalk()">🚶 Symuluj przejście pacjenta (A* Route)</button>
+          <button class="btn btn-primary" onclick="pingHrtfBeacon()">🔊 Latarnia HRTF 3D (<span id="beaconHzLabel">528 Hz</span>)</button>
+          <button class="btn" onclick="toggleViContrastMode()">👁️ Tryb WCAG AAA (VI)</button>
+        </div>
+      </div>
+
+      <div class="db-grid">
+        <div style="border-radius:18px; overflow:hidden; border:1px solid rgba(255,255,255,0.16); background:#040812;">
+          <canvas id="clinic3dCanvas" width="760" height="360" style="width:100%; height:340px; display:block; cursor:pointer;" onclick="pingHrtfBeacon()"></canvas>
+          <div style="padding:10px 14px; background:rgba(6,11,20,0.92); border-top:1px solid rgba(255,255,255,0.12); display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:10px; font-size:12px;">
+            <div>
+              Obrót 3D (Yaw): <input type="range" id="yawRange" min="-60" max="60" value="26" oninput="update3dAngles()" />
+            </div>
+            <div>
+              Nachylenie (Pitch): <input type="range" id="pitchRange" min="18" max="60" value="35" oninput="update3dAngles()" />
+            </div>
+            <div id="clockDirectionReadout" style="color:var(--lime); font-weight:700;">
+              Kierunek: Godzina 10 • 6.4 m (ok. 9 kroków)
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex; flex-direction:column; justify-content:space-between; gap:12px;">
+          <div id="roomSelectorButtons" style="display:grid; gap:8px;"></div>
+          <div style="padding:14px; border-radius:16px; background:rgba(5,10,20,0.75); border:1px solid rgba(0,229,255,0.28);">
+            <div style="font-size:11px; color:var(--cyan); font-weight:700; text-transform:uppercase;">
+              Skaner 3D LiDAR (6 Parametrów) & Nawigacja Głosowa VI
+            </div>
+            <div id="activeRoomSummary" style="font-size:13px; font-weight:700; margin-top:4px;">
+              GAB-101 • Medycyna Estetyczna (Braille: ⠃⠍⠁⠚⠁)
+            </div>
+            <div id="activeRoomLandmark" style="font-size:11.5px; color:var(--text-muted); margin-top:4px;">
+              Po lewej stronie głównego korytarza, pierwsze drzwi za recepcją (ścieżka naprowadzająca z guzkami uwagi).
+            </div>
+            <div class="metrics-strip" style="margin-top:8px;">
+              <div><span>WHI 3D Index</span><strong style="color:var(--lime);" id="lidarWhiVal">88.4/100</strong></div>
+              <div><span>Wskaźnik CEI</span><strong style="color:var(--cyan);" id="lidarCeiVal">14.2%</strong></div>
+              <div><span>Beacon HRTF</span><strong id="lidarHzVal">528 Hz</strong></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- Czysta Baza Danych + Formularz Dodawania Usług w 4 Działach -->
     <section class="db-grid">
       <div>
@@ -451,6 +503,260 @@
         `;
       }).join('');
     }
+
+    // =========================================================================
+    // 3D SPATIAL CLINIC DIGITAL TWIN + VI WAYFINDING (HRTF AUDIO + BRAILLE)
+    // =========================================================================
+    const CLINIC_3D_ROOMS = [
+      {
+        dept: 'Medycyna Estetyczna',
+        code: 'GAB-101',
+        braille: '⠃⠍⠁⠚⠁',
+        hz: 528,
+        pos: [-5.5, 0, -3.5],
+        color: '#e2c799',
+        whi: '88.4/100',
+        cei: '14.2%',
+        clockText: 'Kierunek: Godzina 10 • 6.4 m (ok. 9 kroków)',
+        landmark: 'Po lewej stronie głównego korytarza, pierwsze drzwi za recepcją (ścieżka naprowadzająca z guzkami uwagi).'
+      },
+      {
+        dept: 'Flebologia',
+        code: 'GAB-102',
+        braille: '⠃⠍⠁⠚⠃',
+        hz: 594,
+        pos: [5.5, 0, -3.5],
+        color: '#00e5ff',
+        whi: '82.1/100',
+        cei: '24.6%',
+        clockText: 'Kierunek: Godzina 2 • 6.4 m (ok. 9 kroków)',
+        landmark: 'Po prawej stronie głównego korytarza, naprzeciwko gabinetu 101 (USG Doppler 3D & Laser EVLT 1470nm).'
+      },
+      {
+        dept: 'Proktologia',
+        code: 'GAB-103',
+        braille: '⠃⠍⠁⠚⠉',
+        hz: 660,
+        pos: [-5.5, 0, 3.5],
+        color: '#6a85ff',
+        whi: '85.7/100',
+        cei: '18.5%',
+        clockText: 'Kierunek: Godzina 11 • 11.2 m (ok. 15 kroków)',
+        landmark: 'Drugi gabinet po lewej stronie korytarza, wyposażony w śluzę zapewniającą pełną dyskrecję.'
+      },
+      {
+        dept: 'Chirurgia Ogólna',
+        code: 'GAB-104',
+        braille: '⠃⠍⠁⠚⠙',
+        hz: 792,
+        pos: [5.5, 0, 3.5],
+        color: '#b8ff01',
+        whi: '90.2/100',
+        cei: '12.8%',
+        clockText: 'Kierunek: Godzina 1 • 11.2 m (ok. 15 kroków)',
+        landmark: 'Na końcu korytarza po prawej stronie, przy strefie aseptycznej chirurgii jednego dnia.'
+      }
+    ];
+
+    let activeRoomIdx = 0;
+    let yaw3d = 26;
+    let pitch3d = 35;
+    let walkProg = 0;
+    let walkingTimer = null;
+    let viHighContrast = false;
+    let sharedAudioCtx = null;
+
+    function renderRoomButtons() {
+      const wrap = document.getElementById('roomSelectorButtons');
+      if (!wrap) return;
+      wrap.innerHTML = CLINIC_3D_ROOMS.map((r, idx) => {
+        const isAct = idx === activeRoomIdx;
+        return `
+          <button class="btn" style="text-align:left; display:flex; justify-content:space-between; align-items:center; border-color:${isAct ? r.color : 'rgba(255,255,255,0.16)'}; background:${isAct ? 'rgba(0,229,255,0.16)' : 'rgba(255,255,255,0.04)'};" onclick="select3dRoom(${idx})">
+            <span><strong>${r.code}</strong> • ${r.dept} <small style="opacity:0.75;">(Braille: ${r.braille})</small></span>
+            <span style="color:${r.color}; font-family:monospace;">${r.hz} Hz</span>
+          </button>
+        `;
+      }).join('');
+    }
+
+    function select3dRoom(idx) {
+      activeRoomIdx = idx;
+      walkProg = 0;
+      const r = CLINIC_3D_ROOMS[idx];
+      document.getElementById('beaconHzLabel').textContent = r.hz + ' Hz';
+      document.getElementById('activeRoomSummary').textContent = `${r.code} • ${r.dept} (Braille: ${r.braille})`;
+      document.getElementById('activeRoomLandmark').textContent = r.landmark;
+      document.getElementById('lidarWhiVal').textContent = r.whi;
+      document.getElementById('lidarCeiVal').textContent = r.cei;
+      document.getElementById('lidarHzVal').textContent = r.hz + ' Hz';
+      document.getElementById('clockDirectionReadout').textContent = r.clockText;
+      prefillDepartment(r.dept);
+      renderRoomButtons();
+      pingHrtfBeacon();
+    }
+
+    function update3dAngles() {
+      yaw3d = parseFloat(document.getElementById('yawRange').value || '26');
+      pitch3d = parseFloat(document.getElementById('pitchRange').value || '35');
+    }
+
+    function toggleViContrastMode() {
+      viHighContrast = !viHighContrast;
+      document.body.style.background = viHighContrast ? '#05070a' : '';
+    }
+
+    function start3dWalk() {
+      walkProg = 0;
+      if (walkingTimer) clearInterval(walkingTimer);
+      pingHrtfBeacon();
+      walkingTimer = setInterval(() => {
+        walkProg = Math.min(1, walkProg + 0.03);
+        if (walkProg >= 1) {
+          clearInterval(walkingTimer);
+          pingHrtfBeacon();
+        }
+      }, 55);
+    }
+
+    function pingHrtfBeacon() {
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!sharedAudioCtx) sharedAudioCtx = new AudioCtx();
+        if (sharedAudioCtx.state === 'suspended') sharedAudioCtx.resume();
+        const r = CLINIC_3D_ROOMS[activeRoomIdx];
+        const now = sharedAudioCtx.currentTime;
+        const osc = sharedAudioCtx.createOscillator();
+        const gain = sharedAudioCtx.createGain();
+        const panner = sharedAudioCtx.createPanner();
+        panner.panningModel = 'HRTF';
+        panner.positionX.setValueAtTime(r.pos[0], now);
+        panner.positionY.setValueAtTime(1.6, now);
+        panner.positionZ.setValueAtTime(r.pos[2], now);
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(r.hz, now);
+        osc.frequency.exponentialRampToValueAtTime(r.hz * 1.4, now + 0.18);
+        gain.gain.setValueAtTime(0.001, now);
+        gain.gain.linearRampToValueAtTime(0.2, now + 0.03);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.32);
+        osc.connect(gain);
+        gain.connect(panner);
+        panner.connect(sharedAudioCtx.destination);
+        osc.start(now);
+        osc.stop(now + 0.34);
+      } catch (e) {}
+    }
+
+    (function animate3dClinic() {
+      const canvas = document.getElementById('clinic3dCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      let pulse = 0;
+
+      function frame() {
+        pulse += 0.04;
+        const w = canvas.width;
+        const h = canvas.height;
+        ctx.clearRect(0, 0, w, h);
+        ctx.fillStyle = viHighContrast ? '#05070a' : '#060c18';
+        ctx.fillRect(0, 0, w, h);
+
+        const yaw = (yaw3d * Math.PI) / 180;
+        const pitch = (pitch3d * Math.PI) / 180;
+        const cx = w * 0.5;
+        const cy = h * 0.55;
+        const scale = 23;
+
+        function proj(x, y, z) {
+          const rx = x * Math.cos(yaw) - z * Math.sin(yaw);
+          const rz = x * Math.sin(yaw) + z * Math.cos(yaw);
+          const ry = y * Math.cos(pitch) - rz * Math.sin(pitch);
+          const persp = 24 / Math.max(12, 24 + rz * 0.3);
+          return [cx + rx * scale * persp, cy - ry * scale * persp];
+        }
+
+        // LiDAR Floor Grid
+        ctx.strokeStyle = viHighContrast ? 'rgba(255,230,0,0.22)' : 'rgba(0,229,255,0.12)';
+        ctx.lineWidth = 1;
+        for (let gx = -9; gx <= 9; gx += 1.8) {
+          const [x1, y1] = proj(gx, 0, -7.5);
+          const [x2, y2] = proj(gx, 0, 6.5);
+          ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+        }
+
+        // Tactile Corridor Spine
+        const [t1x, t1y] = proj(0, 0.05, -6.8);
+        const [t2x, t2y] = proj(0, 0.05, 5.2);
+        ctx.strokeStyle = viHighContrast ? '#ffe600' : 'rgba(226,199,153,0.6)';
+        ctx.lineWidth = 3;
+        ctx.setLineDash([5, 5]);
+        ctx.beginPath(); ctx.moveTo(t1x, t1y); ctx.lineTo(t2x, t2y); ctx.stroke();
+        ctx.setLineDash([]);
+
+        // 4 Rooms
+        CLINIC_3D_ROOMS.forEach((r, idx) => {
+          const sel = idx === activeRoomIdx;
+          const [bx, bz] = [r.pos[0], r.pos[2]];
+          const rw = 2.6, rd = 2.0, rh = sel ? 2.2 : 1.6;
+          const base = [
+            proj(bx - rw, 0, bz - rd),
+            proj(bx + rw, 0, bz - rd),
+            proj(bx + rw, 0, bz + rd),
+            proj(bx - rw, 0, bz + rd)
+          ];
+          const top = [
+            proj(bx - rw, rh, bz - rd),
+            proj(bx + rw, rh, bz - rd),
+            proj(bx + rw, rh, bz + rd),
+            proj(bx - rw, rh, bz + rd)
+          ];
+          ctx.fillStyle = sel ? 'rgba(0,229,255,0.22)' : 'rgba(255,255,255,0.05)';
+          ctx.strokeStyle = sel ? (viHighContrast ? '#ffe600' : r.color) : 'rgba(255,255,255,0.22)';
+          ctx.lineWidth = sel ? 2.4 : 1.1;
+          ctx.beginPath();
+          base.forEach(([px, py], i) => (i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py)));
+          ctx.closePath(); ctx.fill(); ctx.stroke();
+
+          for (let i = 0; i < 4; i++) {
+            ctx.beginPath();
+            ctx.moveTo(base[i][0], base[i][1]);
+            ctx.lineTo(top[i][0], top[i][1]);
+            ctx.stroke();
+          }
+
+          const [lx, ly] = proj(bx, rh + 0.45, bz);
+          ctx.fillStyle = 'rgba(5,10,20,0.88)';
+          ctx.fillRect(lx - 78, ly - 18, 156, 28);
+          ctx.strokeRect(lx - 78, ly - 18, 156, 28);
+          ctx.fillStyle = sel ? r.color : '#f8fafc';
+          ctx.font = 'bold 10.5px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText(`${r.code} • ${r.dept}`, lx, ly - 4);
+          ctx.fillStyle = '#94a3b8';
+          ctx.font = '9.5px monospace';
+          ctx.fillText(`Braille: ${r.braille} • ${r.hz}Hz`, lx, ly + 7);
+        });
+
+        // Active Route & Patient Pose
+        const act = CLINIC_3D_ROOMS[activeRoomIdx];
+        const [sx, sy] = proj(0, 0.15, -6.6);
+        const [mx, my] = proj(0, 0.15, act.pos[2]);
+        const [ex, ey] = proj(act.pos[0] * 0.72, 0.15, act.pos[2]);
+        ctx.strokeStyle = '#b8ff01';
+        ctx.lineWidth = 3;
+        ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(mx, my); ctx.lineTo(ex, ey); ctx.stroke();
+
+        const px = walkProg < 0.55 ? 0 : ((walkProg - 0.55) / 0.45) * (act.pos[0] * 0.72);
+        const pz = walkProg < 0.55 ? -6.6 + (walkProg / 0.55) * (act.pos[2] + 6.6) : act.pos[2];
+        const [ux, uy] = proj(px, 0.3, pz);
+        ctx.fillStyle = '#00e5ff';
+        ctx.beginPath(); ctx.arc(ux, uy, 6 + Math.sin(pulse * 2) * 1.5, 0, Math.PI * 2); ctx.fill();
+
+        requestAnimationFrame(frame);
+      }
+      renderRoomButtons();
+      requestAnimationFrame(frame);
+    })();
 
     renderDatabase();
   </script>
