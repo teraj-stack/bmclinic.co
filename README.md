@@ -4,10 +4,10 @@
 [![React 19](https://img.shields.io/badge/React-19.0-149eca?logo=react)](https://react.dev/)
 [![TypeScript 5.7](https://img.shields.io/badge/TypeScript-5.7-3178c6?logo=typescript)](https://www.typescriptlang.org/)
 [![WCAG 2.1 AAA](https://img.shields.io/badge/Dostępność-WCAG_2.1_AAA_%2B_Audio_HRTF_3D-10b981)](#3-cyfrowy-bliźniak-3d-kliniki--nawigacja-dla-osób-niewidomych-vi-wayfinding)
-[![Medyczne SEO i GEO](https://img.shields.io/badge/SEO-NavBoost_%7C_E--E--A--T_%7C_AI_Overviews-6366f1)](#6-silnik-ai-seo--conversion-intelligence-ymyl--e-e-a-t)
-[![Gotowe na Vercel](https://img.shields.io/badge/Wdrożenie-Vercel_Staged_Production-000000?logo=vercel)](#8-uruchomienie-lokalne-i-wdrożenie-na-vercel-staged-production)
+[![Medyczne SEO i GEO](https://img.shields.io/badge/SEO-NavBoost_%7C_E--E--A--T_%7C_AI_Overviews-6366f1)](#5-silnik-ai-seo--conversion-intelligence-ymyl--e-e-a-t)
+[![Gotowe na Vercel](https://img.shields.io/badge/Wdrożenie-Vercel_Staged_Production-000000?logo=vercel)](#7-uruchomienie-lokalne-i-wdrożenie-na-vercel-staged-production)
 
-Kompletna, flagowa platforma medyczna **Next.js 15 (App Router, React 19, TypeScript, Tailwind CSS)** stworzona dla **BM Clinic (`bmclinic.co` — Klinika Chirurgii Małoinwazyjnej, Flebologii, Proktologii i Medycyny Estetycznej)**. Projekt łączy architekturę **Medical SEO / Generative Engine Optimization (GEO / Google AI Overviews)** z interaktywnym **Cyfrowym Bliźniakiem 3D kliniki**, nawigacją dźwiękową **3D Web Audio HRTF dla pacjentów niewidomych i słabowidzących**, **6-parametrowym analizatorem diagnostycznym 3D LiDAR**, wizualizatorem impulsów lasera **1470 nm / 980 nm** oraz widokiem paralaksy 3D z okien i otwartego świetlika dachowego kliniki.
+Kompletna, flagowa platforma medyczna **Next.js 15 (App Router, React 19, TypeScript, Tailwind CSS)** stworzona dla **BM Clinic (`bmclinic.co` — Klinika Chirurgii Małoinwazyjnej, Flebologii, Proktologii i Medycyny Estetycznej)**. Projekt łączy architekturę **Medical SEO / Generative Engine Optimization (GEO / Google AI Overviews)** z interaktywnym **Cyfrowym Bliźniakiem 3D kliniki**, nawigacją dźwiękową **3D Web Audio HRTF dla pacjentów niewidomych i słabowidzących** oraz **6-parametrowym analizatorem diagnostycznym 3D LiDAR**.
 
 ---
 
@@ -17,10 +17,9 @@ Kompletna, flagowa platforma medyczna **Next.js 15 (App Router, React 19, TypeSc
 2. [Działy Zabiegowe i Podstrony Procedur Medycznych](#2-działy-zabiegowe-i-podstrony-procedur-medycznych)
 3. [Cyfrowy Bliźniak 3D Kliniki & Nawigacja dla Osób Niewidomych (VI Wayfinding)](#3-cyfrowy-bliźniak-3d-kliniki--nawigacja-dla-osób-niewidomych-vi-wayfinding)
 4. [Skaner Diagnostyczny 3D LiDAR (6 Parametrów Klinicznych)](#4-skaner-diagnostyczny-3d-lidar-6-parametrów-klinicznych)
-5. [Moduły Wizualne 3D: Laser 1470 nm, Paralaksa 3 Okien + Świetlik Dachowy & Pakiety Pozabiegowe](#5-moduły-wizualne-3d-laser-1470-nm-paralaksa-3-okien--świetlik-dachowy--pakiety-pozabiegowe)
-6. [Silnik AI SEO & Conversion Intelligence (YMYL / E-E-A-T)](#6-silnik-ai-seo--conversion-intelligence-ymyl--e-e-a-t)
-7. [Struktura Katalogów i Punkty Końcowe API](#7-struktura-katalogów-i-punkty-końcowe-api)
-8. [Uruchomienie Lokalne i Wdrożenie na Vercel (Staged Production)](#8-uruchomienie-lokalne-i-wdrożenie-na-vercel-staged-production)
+5. [Silnik AI SEO & Conversion Intelligence (YMYL / E-E-A-T)](#5-silnik-ai-seo--conversion-intelligence-ymyl--e-e-a-t)
+6. [Struktura Katalogów i Punkty Końcowe API](#6-struktura-katalogów-i-punkty-końcowe-api)
+7. [Uruchomienie Lokalne i Wdrożenie na Vercel (Staged Production)](#7-uruchomienie-lokalne-i-wdrożenie-na-vercel-staged-production)
 
 ---
 
@@ -33,7 +32,6 @@ flowchart TD
     subgraph Frontend3D["Interaktywne Moduły Kliniczne 3D & Dostępność WCAG AAA"]
         Spatial3D["BmClinicSpatialModel3D.tsx\nCyfrowy Bliźniak 3D + Web Audio HRTF + Braille"]
         Lidar3D["BmClinicLidarDiagnosticAnalyzer.tsx\nSkaner 3D LiDAR (WHI-3D & CEI)"]
-        LaserParallax["BmClinicInitialModulesSuite.tsx\nLaser 1470nm 3D + Paralaksa 3 Okien i Świetlika + Post-Care"]
         CalcBooking["BmClinicPricingAndRecoveryCalculator.tsx\n& BmClinicBookingModal.tsx (Rezerwacja 24/7)"]
     end
 
@@ -100,20 +98,7 @@ Na podstawie pomiarów algorytm wylicza syntetyczne indeksy **WHI-3D (*Wound & T
 
 ---
 
-## 5. Moduły Wizualne 3D: Laser 1470 nm, Paralaksa 3 Okien + Świetlik Dachowy & Pakiety Pozabiegowe
-
-W komponencie `src/components/BmClinicInitialModulesSuite.tsx` zintegrowano autorskie moduły wizualne i konwersyjne:
-- **Wizualizator Impulsów Światłowodowych 3D (Laser 1470 nm vs 980 nm)**:
-  - Renderuje 4 koncentryczne, obracające się pierścienie **Liquid Glass** oraz radialny impuls światłowodowy z regulacją mocy (`2.0 W – 15.0 W`) i długości fali (`1470 nm` celowane w wodę śródtkankową vs `980 nm` w oksyhemoglobinę).
-- **Widok 3D z Okien Kliniki z Paralaksą i Otwartym Świetlikiem Dachowym (*Skylight*)**:
-  - **3 rozstawione, łukowe okna gabinetu** z niezależną głębią paralaksy 3D oraz **otwarty świetlik dachowy** z bezpośrednim widokiem na niebo, słońce/księżyc i przepływające chmury,
-  - **4 pory dnia**: *Świt (Dawn)*, *Południe (Noon)*, *Złota Godzina (Golden Hour)*, *Zmierzch (Twilight)*,
-  - **5 trajektorii ruchu kamery 3D**: *Okrąg (`CIRCLE`)*, *Wahadło (`SWAY`)*, *Ósemka 3D (`FIGURE_8`)*, *Oddech (`BREATH`)* oraz interaktywne śledzenie kursora (`MOUSE`).
-- **Zestawy Pozabiegowe (*Post-Care Kits*)**: dedykowane pakiety rekonwalescencyjne dla każdego z 4 działów z kalkulacją koszyka i bezpośrednim przejściem do rezerwacji.
-
----
-
-## 6. Silnik AI SEO & Conversion Intelligence (YMYL / E-E-A-T)
+## 5. Silnik AI SEO & Conversion Intelligence (YMYL / E-E-A-T)
 
 Silnik `src/lib/seo-scoring-engine.ts` oraz `bmclinic_db_engine.py` ocenia każdą podstronę kliniki w skali `0–100` oraz wylicza sygnał nagrody **Reinforcement Learning (`Agent Reward Signal 0.000–1.000`)** dla Agenta AI:
 
@@ -127,7 +112,7 @@ $$\text{Composite SEO Score} = 0.35 \cdot \text{NavBoost} + 0.25 \cdot \text{E-E
 
 ---
 
-## 7. Struktura Katalogów i Punkty Końcowe API
+## 6. Struktura Katalogów i Punkty Końcowe API
 
 ```text
 bmclinic.co/
@@ -147,11 +132,10 @@ bmclinic.co/
 │   │   ├── opengraph-image.tsx         # Dynamiczna karta OpenGraph 1200x630 (Edge)
 │   │   ├── robots.ts                   # Konfiguracja crawlerów + botów AI (GPTBot, Google-Extended)
 │   │   ├── sitemap.ts                  # Automatyczna mapa strony XML
-│   │   └── page.tsx                    # Strona główna kliniki z wszystkimi modułami 3D
+│   │   └── page.tsx                    # Strona główna kliniki z modułami 3D i nawigacją VI
 │   ├── components/
 │   │   ├── BmClinicSpatialModel3D.tsx              # Cyfrowy Bliźniak 3D + HRTF Audio + Braille
 │   │   ├── BmClinicLidarDiagnosticAnalyzer.tsx     # 6-parametrowy skaner 3D LiDAR (WHI-3D / CEI)
-│   │   ├── BmClinicInitialModulesSuite.tsx         # Laser 1470nm 3D, Paralaksa 3 Okien + Świetlik, Post-Care
 │   │   ├── BmClinicPricingAndRecoveryCalculator.tsx# Kalkulator kosztów i rekonwalescencji
 │   │   ├── BmClinicBookingModal.tsx                # Modal rezerwacji wizyty online 24/7
 │   │   └── BmClinicMobileTransitionShell.tsx       # Płynna nawigacja mobilna i pasek dolny
@@ -165,7 +149,7 @@ bmclinic.co/
 
 ---
 
-## 8. Uruchomienie Lokalne i Wdrożenie na Vercel (Staged Production)
+## 7. Uruchomienie Lokalne i Wdrożenie na Vercel (Staged Production)
 
 ### Uruchomienie lokalne
 
