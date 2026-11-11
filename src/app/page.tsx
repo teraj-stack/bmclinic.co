@@ -18,6 +18,7 @@ import BmClinicMobileTransitionShell, {
   runViewTransitionWithHaptics,
 } from '@/components/BmClinicMobileTransitionShell';
 import BmClinicBookingModal from '@/components/BmClinicBookingModal';
+import BmClinicInitialModulesSuite from '@/components/BmClinicInitialModulesSuite';
 import {
   DEPARTMENT_LIST,
   buildFlagshipSeedEntries,
@@ -500,6 +501,26 @@ export default function BmClinicHomePage() {
             }}
           />
         </div>
+
+        {/* Initial Project Modules Suite (Laser 1470nm 3D Impulse Visualizer, AI Content Agent Blueprint Generator, Parallax 3D Clinic Window View & Post-Care Kits) */}
+        <BmClinicInitialModulesSuite
+          selectedDept={selectedDept}
+          entries={entries}
+          highContrastViMode={highContrastViMode}
+          onDeployBlueprintPage={async (newEntry) => {
+            const next = [newEntry, ...entries];
+            persistEntries(next);
+            try {
+              await fetch('/api/pages', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(newEntry),
+              });
+            } catch {
+              // Non-blocking
+            }
+          }}
+        />
 
         {/* Add Procedure to Clean Foundation Database */}
         <section
