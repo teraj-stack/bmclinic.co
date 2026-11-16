@@ -2,6 +2,8 @@
 
 import React, { useState, use } from 'react';
 import Link from 'next/link';
+import RutaWaitingRoom from '@/components/ruta/RutaWaitingRoom';
+import type { RutaDepartmentSlug } from '@/data/ruta-specializacje';
 import BmClinicSpatialModel3D, {
   CLINIC_ROOMS,
   type DepartmentRoomNode,
@@ -90,6 +92,14 @@ export default function DepartmentHubPage({
               {profile.pwzNumber}
             </span>
           </div>
+          {DEPARTMENT_PROFILES[activeSlug] && (
+            <Link
+              href={`/ruta/${activeSlug}`}
+              className="mb-4 inline-flex items-center gap-2 rounded-2xl border border-teal-200/50 bg-teal-300/15 px-5 py-3 text-sm font-bold text-teal-100 transition-colors hover:bg-teal-300/25"
+            >
+              Otwórz interaktywną mapę objawów RUTA <span aria-hidden>↗</span>
+            </Link>
+          )}
           <h1 className="text-2xl md:text-4xl font-extrabold tracking-tight">
             {room.title}
           </h1>
@@ -125,6 +135,7 @@ export default function DepartmentHubPage({
       </header>
 
       <main className="max-w-7xl mx-auto grid gap-8 pb-20">
+        <RutaWaitingRoom key={activeSlug} department={activeSlug as RutaDepartmentSlug} name={profile.deptName} />
         {/* AI Overviews (GEO) Direct Clinical Summary + Indications */}
         <section className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <article className="lg:col-span-2 rounded-3xl border border-cyan-500/30 bg-white/5 backdrop-blur-xl p-6">

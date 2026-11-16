@@ -46,8 +46,8 @@ export const metadata: Metadata = {
       'Interaktywny Model 3D Kliniki, Skaner 3D LiDAR (6 parametrów WHI/CEI) i Transparentny Kalkulator Zabiegów.',
   },
   robots: {
-    index: true,
-    follow: true,
+    index: false,
+    follow: false,
   },
 };
 
