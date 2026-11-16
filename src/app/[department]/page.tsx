@@ -90,6 +90,14 @@ export default function DepartmentHubPage({
               {profile.pwzNumber}
             </span>
           </div>
+          {activeSlug === 'proktologia' && (
+            <Link
+              href="/ruta/proktologia"
+              className="mb-4 inline-flex items-center gap-2 rounded-2xl border border-teal-200/50 bg-teal-300/15 px-5 py-3 text-sm font-bold text-teal-100 transition-colors hover:bg-teal-300/25"
+            >
+              Otwórz interaktywną mapę objawów RUTA <span aria-hidden>↗</span>
+            </Link>
+          )}
           <h1 className="text-2xl md:text-4xl font-extrabold tracking-tight">
             {room.title}
           </h1>
