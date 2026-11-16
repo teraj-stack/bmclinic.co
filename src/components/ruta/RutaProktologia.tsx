@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import { RUTA_PROKTOLOGIA, type RutaNode } from '@/data/ruta-proktologia';
 import { ADDITIONAL_RUTA, type RutaDepartmentSlug } from '@/data/ruta-specializacje';
@@ -22,7 +22,7 @@ export default function RutaProktologia({ department = 'proktologia' }: { depart
   const [zoom, setZoom] = useState(1);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
   const [compact, setCompact] = useState(false);
-  const current = useMemo(() => nodes.find((n) => n.id === path[path.length - 1]), [path]);
+  const current = nodes.find((n) => n.id === path[path.length - 1]);
   const chosenSymptom = roots.find((n) => n.id === symptomId);
   const next = current ? childrenOf(current.id) : chosenSymptom ? childrenOf(chosenSymptom.id) : [];
   const openSymptom = (id: string) => {
@@ -117,7 +117,7 @@ export default function RutaProktologia({ department = 'proktologia' }: { depart
               {next.length > 0 && <div className="mt-6 space-y-2">
                 {next.map((node) => <button key={node.id} type="button" onClick={() => setPath((prev) => [...prev, node.id])} className="w-full rounded-xl bg-teal-200 px-4 py-3 text-left text-sm font-semibold text-[#06282d] hover:bg-teal-100">{node.label} →</button>)}
               </div>}
-              {current.type === 'action' && <Link href="/proktologia" className="mt-6 block rounded-xl bg-teal-200 p-3 text-center text-sm font-semibold text-[#06282d]">Wróć do działu →</Link>}
+              {current.type === 'action' && <Link href={`/${department}`} className="mt-6 block rounded-xl bg-teal-200 p-3 text-center text-sm font-semibold text-[#06282d]">Wróć do działu →</Link>}
               <button type="button" onClick={back} className="mt-5 text-sm text-white/65 underline underline-offset-4">← Poprzedni element</button>
             </> : <>
               <h2 className="mt-3 text-2xl font-semibold">Rozpocznij od objawu</h2>
