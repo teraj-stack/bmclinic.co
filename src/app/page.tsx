@@ -442,6 +442,13 @@ export default function BmClinicHomePage() {
 
                 <div className="mt-4 pt-2 border-t border-white/10 flex items-center justify-between">
                   <Link
+                    href={`/ruta/${dept.slug.slice(1)}`}
+                    onClick={(e) => e.stopPropagation()}
+                    className="text-[11px] font-bold text-teal-200 hover:underline"
+                  >
+                    Mapa objawów RUTA ↗
+                  </Link>
+                  <Link
                     href={dept.slug}
                     onClick={(e) => e.stopPropagation()}
                     className="text-[11px] font-bold text-amber-300 hover:underline"
