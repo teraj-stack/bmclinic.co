@@ -2,6 +2,8 @@
 
 import React, { useState, use } from 'react';
 import Link from 'next/link';
+import RutaWaitingRoom from '@/components/ruta/RutaWaitingRoom';
+import type { RutaDepartmentSlug } from '@/data/ruta-specializacje';
 import BmClinicSpatialModel3D, {
   CLINIC_ROOMS,
   type DepartmentRoomNode,
@@ -133,6 +135,7 @@ export default function DepartmentHubPage({
       </header>
 
       <main className="max-w-7xl mx-auto grid gap-8 pb-20">
+        <RutaWaitingRoom key={activeSlug} department={activeSlug as RutaDepartmentSlug} name={profile.deptName} />
         {/* AI Overviews (GEO) Direct Clinical Summary + Indications */}
         <section className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <article className="lg:col-span-2 rounded-3xl border border-cyan-500/30 bg-white/5 backdrop-blur-xl p-6">
