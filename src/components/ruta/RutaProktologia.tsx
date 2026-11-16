@@ -2,21 +2,29 @@
 
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
-import { RUTA_PROKTOLOGIA, rutaChildren } from '@/data/ruta-proktologia';
+import { RUTA_PROKTOLOGIA, type RutaNode } from '@/data/ruta-proktologia';
+import { ADDITIONAL_RUTA, type RutaDepartmentSlug } from '@/data/ruta-specializacje';
 
-const roots = RUTA_PROKTOLOGIA.filter((node) => node.type === 'symptom');
-const caution = 'Pilna pomoc medyczna jest wskazana przy obfitym krwawieniu, omdleniu lub znacznym osłabieniu, nagłym silnym bólu, gorączce z bolesnym obrzękiem albo czarnym smolistym stolcu.';
+const proktologyCaution = 'Pilna pomoc medyczna jest wskazana przy obfitym krwawieniu, omdleniu lub znacznym osłabieniu, nagłym silnym bólu, gorączce z bolesnym obrzękiem albo czarnym smolistym stolcu.';
 
-export default function RutaProktologia() {
+export default function RutaProktologia({ department = 'proktologia' }: { department?: RutaDepartmentSlug }) {
+  const alternate = department === 'proktologia' ? null : ADDITIONAL_RUTA[department];
+  const nodes: RutaNode[] = alternate?.nodes ?? RUTA_PROKTOLOGIA;
+  const roots = nodes.filter((node) => node.type === 'symptom');
+  const caution = alternate?.caution ?? proktologyCaution;
+  const departmentName = alternate?.name ?? 'Proktologia';
+  const childrenOf = (id: string) => (nodes.find((node) => node.id === id)?.links ?? [])
+    .map((key) => nodes.find((node) => node.id === key))
+    .filter((node): node is RutaNode => Boolean(node));
   const [symptomId, setSymptomId] = useState<string | null>(null);
   const [path, setPath] = useState<string[]>([]);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [zoom, setZoom] = useState(1);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
   const [compact, setCompact] = useState(false);
-  const current = useMemo(() => RUTA_PROKTOLOGIA.find((n) => n.id === path[path.length - 1]), [path]);
+  const current = useMemo(() => nodes.find((n) => n.id === path[path.length - 1]), [path]);
   const chosenSymptom = roots.find((n) => n.id === symptomId);
-  const next = current ? rutaChildren(current.id) : chosenSymptom ? rutaChildren(chosenSymptom.id) : [];
+  const next = current ? childrenOf(current.id) : chosenSymptom ? childrenOf(chosenSymptom.id) : [];
   const openSymptom = (id: string) => {
     setSymptomId(id);
     setPath([id]);
@@ -31,17 +39,17 @@ export default function RutaProktologia() {
       <div className="mx-auto max-w-7xl px-4 py-7 sm:px-8">
         <header className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-6">
           <div>
-            <Link href="/proktologia" className="text-sm text-teal-200 hover:underline">← Poczekalnia proktologii</Link>
+            <Link href={`/${department}`} className="text-sm text-teal-200 hover:underline">← Poczekalnia: {departmentName}</Link>
             <p className="mt-4 text-xs uppercase tracking-[.25em] text-teal-200/70">BM Clinic / Mapa elementów</p>
-            <h1 className="mt-2 text-4xl font-semibold tracking-tight">RUTA <span className="font-light text-white/55">/ Proktologia</span></h1>
+            <h1 className="mt-2 text-4xl font-semibold tracking-tight">RUTA <span className="font-light text-white/55">/ {departmentName}</span></h1>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-white/65">Wybierz to, co odczuwasz. Odkrywaj połączone elementy i przygotuj się do rozmowy z lekarzem.</p>
           </div>
           <Link href="/" className="rounded-full border border-white/25 px-5 py-2 text-sm hover:bg-white/10">Sky Lobby ↗</Link>
         </header>
 
         <nav aria-label="Aktualna ścieżka RUTA" className="mt-5 flex flex-wrap items-center gap-2 text-xs text-white/60">
-          <Link href="/">Sky Lobby</Link><span>›</span><Link href="/proktologia">Proktologia</Link><span>›</span><span className="text-teal-200">RUTA</span>
-          {path.map((id) => <span key={id}>› {RUTA_PROKTOLOGIA.find((n) => n.id === id)?.label}</span>)}
+          <Link href="/">Sky Lobby</Link><span>›</span><Link href={`/${department}`}>{departmentName}</Link><span>›</span><span className="text-teal-200">RUTA</span>
+          {path.map((id) => <span key={id}>› {nodes.find((n) => n.id === id)?.label}</span>)}
         </nav>
 
         <section className="mt-7 grid gap-5 lg:grid-cols-[minmax(0,1.5fr)_minmax(300px,0.8fr)]">
@@ -82,7 +90,7 @@ export default function RutaProktologia() {
                   <div className="mx-auto max-w-xl rounded-2xl border border-teal-200/40 bg-[#103b41] p-5">
                     <p className="text-xs tracking-widest text-teal-200">AKTYWNY WĘZEŁ · {chosenSymptom.label.toUpperCase()}</p>
                     <p className="mt-2 text-sm text-white/80">{chosenSymptom.description}</p>
-                    {rutaChildren(chosenSymptom.id).map((node) => <button key={node.id} type="button" onClick={() => setPath([chosenSymptom.id, node.id])} className="mt-4 w-full rounded-xl border border-white/25 bg-white/10 px-4 py-3 text-left text-sm hover:bg-white/20">{node.label} <span className="float-right">↗</span></button>)}
+                    {childrenOf(chosenSymptom.id).map((node) => <button key={node.id} type="button" onClick={() => setPath([chosenSymptom.id, node.id])} className="mt-4 w-full rounded-xl border border-white/25 bg-white/10 px-4 py-3 text-left text-sm hover:bg-white/20">{node.label} <span className="float-right">↗</span></button>)}
                   </div>
                 </div>}
               </div>
@@ -109,7 +117,7 @@ export default function RutaProktologia() {
               {next.length > 0 && <div className="mt-6 space-y-2">
                 {next.map((node) => <button key={node.id} type="button" onClick={() => setPath((prev) => [...prev, node.id])} className="w-full rounded-xl bg-teal-200 px-4 py-3 text-left text-sm font-semibold text-[#06282d] hover:bg-teal-100">{node.label} →</button>)}
               </div>}
-              {current.type === 'action' && <Link href="/proktologia" className="mt-6 block rounded-xl bg-teal-200 p-3 text-center text-sm font-semibold text-[#06282d]">Wróć do proktologii →</Link>}
+              {current.type === 'action' && <Link href="/proktologia" className="mt-6 block rounded-xl bg-teal-200 p-3 text-center text-sm font-semibold text-[#06282d]">Wróć do działu →</Link>}
               <button type="button" onClick={back} className="mt-5 text-sm text-white/65 underline underline-offset-4">← Poprzedni element</button>
             </> : <>
               <h2 className="mt-3 text-2xl font-semibold">Rozpocznij od objawu</h2>
