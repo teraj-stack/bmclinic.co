@@ -12,6 +12,7 @@ export default function RutaProktologia() {
   const [path, setPath] = useState<string[]>([]);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [zoom, setZoom] = useState(1);
+  const [offset, setOffset] = useState({ x: 0, y: 0 });
   const [compact, setCompact] = useState(false);
   const current = useMemo(() => RUTA_PROKTOLOGIA.find((n) => n.id === path[path.length - 1]), [path]);
   const chosenSymptom = roots.find((n) => n.id === symptomId);
@@ -50,11 +51,19 @@ export default function RutaProktologia() {
               <div className="flex gap-2">
                 <button type="button" aria-label="Pomniejsz mapę" onClick={() => setZoom((z) => Math.max(.75, +(z - .1).toFixed(2)))} className="rounded-xl border border-white/20 px-3 py-2">−</button>
                 <button type="button" aria-label="Powiększ mapę" onClick={() => setZoom((z) => Math.min(1.25, +(z + .1).toFixed(2)))} className="rounded-xl border border-white/20 px-3 py-2">+</button>
-                <button type="button" onClick={() => {setZoom(1); setPath([]); setSymptomId(null); setAnswers({});}} className="rounded-xl border border-white/20 px-3 py-2 text-xs">Reset</button>
+                <button type="button" onClick={() => {setZoom(1); setOffset({x: 0, y: 0}); setPath([]); setSymptomId(null); setAnswers({});}} className="rounded-xl border border-white/20 px-3 py-2 text-xs">Reset</button>
               </div>
             </div>
-            <div className="mt-7 min-h-[430px] overflow-auto rounded-3xl border border-white/10 bg-black/10 p-5">
-              <div style={{ transform: `scale(${zoom})`, transformOrigin: 'top center' }} className="mx-auto w-full max-w-2xl transition-transform duration-300">
+            <div role="group" aria-label="Przesuwanie mapy" className="mt-4 flex flex-wrap items-center gap-2 text-xs">
+              <span className="mr-2 text-white/60">Przesuń mapę:</span>
+              <button type="button" aria-label="Mapa w lewo" onClick={() => setOffset((v) => ({...v, x: v.x - 48}))} className="rounded-lg border border-white/20 px-3 py-2">←</button>
+              <button type="button" aria-label="Mapa w górę" onClick={() => setOffset((v) => ({...v, y: v.y - 48}))} className="rounded-lg border border-white/20 px-3 py-2">↑</button>
+              <button type="button" aria-label="Mapa w dół" onClick={() => setOffset((v) => ({...v, y: v.y + 48}))} className="rounded-lg border border-white/20 px-3 py-2">↓</button>
+              <button type="button" aria-label="Mapa w prawo" onClick={() => setOffset((v) => ({...v, x: v.x + 48}))} className="rounded-lg border border-white/20 px-3 py-2">→</button>
+              <button type="button" onClick={() => setOffset({x: 0, y: 0})} className="rounded-lg border border-white/20 px-3 py-2">Wyśrodkuj</button>
+            </div>
+            <div className="mt-4 min-h-[430px] overflow-auto rounded-3xl border border-white/10 bg-black/10 p-5">
+              <div style={{ transform: `translate(${offset.x}px, ${offset.y}px) scale(${zoom})`, transformOrigin: 'top center' }} className="mx-auto w-full max-w-2xl transition-transform duration-300">
                 <div className="mx-auto w-fit rounded-2xl border border-teal-200/40 bg-teal-100/10 px-6 py-4 text-center shadow-[0_0_40px_#2dd4bf17]">
                   <div className="text-xs uppercase tracking-widest text-teal-200">RUTA 01</div>
                   <div className="mt-1 text-lg font-medium">Co Cię niepokoi?</div>
@@ -73,7 +82,7 @@ export default function RutaProktologia() {
                   <div className="mx-auto max-w-xl rounded-2xl border border-teal-200/40 bg-[#103b41] p-5">
                     <p className="text-xs tracking-widest text-teal-200">AKTYWNY WĘZEŁ · {chosenSymptom.label.toUpperCase()}</p>
                     <p className="mt-2 text-sm text-white/80">{chosenSymptom.description}</p>
-                    {next.map((node) => <button key={node.id} type="button" onClick={() => setPath((prev) => [...prev, node.id])} className="mt-4 w-full rounded-xl border border-white/25 bg-white/10 px-4 py-3 text-left text-sm hover:bg-white/20">{node.label} <span className="float-right">↗</span></button>)}
+                    {rutaChildren(chosenSymptom.id).map((node) => <button key={node.id} type="button" onClick={() => setPath([chosenSymptom.id, node.id])} className="mt-4 w-full rounded-xl border border-white/25 bg-white/10 px-4 py-3 text-left text-sm hover:bg-white/20">{node.label} <span className="float-right">↗</span></button>)}
                   </div>
                 </div>}
               </div>
