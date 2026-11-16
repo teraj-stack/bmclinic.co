@@ -7,7 +7,7 @@ import { ADDITIONAL_RUTA, type RutaDepartmentSlug } from '@/data/ruta-specializa
 
 const proktologyCaution = 'Pilna pomoc medyczna jest wskazana przy obfitym krwawieniu, omdleniu lub znacznym osłabieniu, nagłym silnym bólu, gorączce z bolesnym obrzękiem albo czarnym smolistym stolcu.';
 
-export default function RutaProktologia({ department = 'proktologia' }: { department?: RutaDepartmentSlug }) {
+export default function RutaProktologia({ department = 'proktologia', initialSymptom }: { department?: RutaDepartmentSlug; initialSymptom?: string }) {
   const alternate = department === 'proktologia' ? null : ADDITIONAL_RUTA[department];
   const nodes: RutaNode[] = alternate?.nodes ?? RUTA_PROKTOLOGIA;
   const roots = nodes.filter((node) => node.type === 'symptom');
@@ -16,8 +16,9 @@ export default function RutaProktologia({ department = 'proktologia' }: { depart
   const childrenOf = (id: string) => (nodes.find((node) => node.id === id)?.links ?? [])
     .map((key) => nodes.find((node) => node.id === key))
     .filter((node): node is RutaNode => Boolean(node));
-  const [symptomId, setSymptomId] = useState<string | null>(null);
-  const [path, setPath] = useState<string[]>([]);
+  const validInitial = nodes.some((node) => node.type === 'symptom' && node.id === initialSymptom) ? initialSymptom! : null;
+  const [symptomId, setSymptomId] = useState<string | null>(validInitial);
+  const [path, setPath] = useState<string[]>(validInitial ? [validInitial] : []);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [zoom, setZoom] = useState(1);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
