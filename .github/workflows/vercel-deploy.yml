@@ -1,78 +1,54 @@
-name: Vercel Build & Staged Pre-Publication Deploy (bmclinic.co)
+name: BM Clinic - verify and preview deploy
 
 on:
   push:
-    branches: [main, preview]
+    branches: [main, preview, feature/ruta-proktologia-mvp-20261116]
   pull_request:
     branches: [main]
   workflow_dispatch:
-    inputs:
-      auto_promote:
-        description: 'Automatycznie opublikuj na domenie głównej po zbudowaniu i teście (/api/health)?'
-        required: false
-        default: 'false'
-        type: choice
-        options:
-          - 'false'
-          - 'true'
-
-env:
-  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-  VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
 
 jobs:
-  build-and-verify:
-    name: 1. Test Build Next.js 15 (Pre-Publish Verification)
+  verify:
+    name: Verify Next.js build
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js 22 LTS
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm run build
 
-      - name: Install dependencies
-        run: npm install
-
-      - name: Build Next.js 15 Production Bundle
-        run: npm run build
-
-  stage-on-vercel:
-    name: 2. Stage Build on Vercel (Before Publishing to Domain)
-    needs: build-and-verify
-    if: ${{ env.VERCEL_TOKEN != '' && env.VERCEL_PROJECT_ID != '' }}
+  preview:
+    name: Optional Vercel preview (no production promotion)
+    needs: verify
+    if: ${{ github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-latest
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js 22 LTS
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: 22
-
-      - name: Install Vercel CLI
-        run: npm install --global vercel@latest
-
-      - name: Pull Vercel Production Environment
-        run: vercel pull --yes --environment=production
-
-      - name: Build Prebuilt Artifacts for Vercel
-        run: vercel build --prod
-
-      - name: Deploy Staged Build (--skip-domain — Build Before Publishing)
-        id: stage
+          node-version: '22'
+      - name: Check deployment credentials
+        id: credentials
+        shell: bash
         run: |
-          STAGED_URL=$(vercel deploy --prebuilt --prod --skip-domain)
-          echo "staged_url=$STAGED_URL" >> "$GITHUB_OUTPUT"
-          echo "Zbudowano wersję Staged przed publikacją: $STAGED_URL"
-
-      - name: Smoke Test Built Site (/api/health)
-        run: vercel curl /api/health --deployment "${{ steps.stage.outputs.staged_url }}"
-
-      - name: Promote to Live Domain (Only when auto_promote == true)
-        if: ${{ github.event.inputs.auto_promote == 'true' }}
-        run: vercel promote "${{ steps.stage.outputs.staged_url }}" --yes
+          if [[ -n "$VERCEL_TOKEN" && -n "$VERCEL_ORG_ID" && -n "$VERCEL_PROJECT_ID" ]]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Vercel preview skipped: project credentials are not configured."
+          fi
+      - name: Deploy preview only
+        if: ${{ steps.credentials.outputs.ready == 'true' }}
+        shell: bash
+        run: |
+          npm install --global vercel@latest
+          vercel pull --yes --environment=preview --token="$VERCEL_TOKEN"
+          vercel build --token="$VERCEL_TOKEN"
+          vercel deploy --prebuilt --token="$VERCEL_TOKEN"
