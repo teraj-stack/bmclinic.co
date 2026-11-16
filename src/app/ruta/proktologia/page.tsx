@@ -7,6 +7,7 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default function RutaPage() {
-  return <RutaProktologia />;
+export default async function RutaPage({ searchParams }: { searchParams: Promise<{ objaw?: string }> }) {
+  const { objaw } = await searchParams;
+  return <RutaProktologia initialSymptom={objaw} />;
 }
