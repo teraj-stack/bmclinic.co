@@ -199,6 +199,10 @@ export default function AestheticMedicine() {
         <h1 style={{fontFamily:'Georgia,serif',fontSize:'clamp(38px,6vw,74px)',lineHeight:1.07,fontWeight:400,margin:'22px 0'}}>Piękno zaczyna się od rozmowy.</h1>
         <p style={{fontSize:'clamp(16px,2vw,20px)',lineHeight:1.65,color:colors.dim,maxWidth:720}}>Wybierz to, co Cię niepokoi lub co chcesz zmienić. Nie musisz znać nazwy zabiegu. To początek rozmowy o potrzebach, możliwościach i bezpieczeństwie.</p>
       </section>
+      <section style={{display:'flex',gap:12,flexWrap:'wrap',margin:'0 0 32px'}}>
+        <Link href="/ruta" style={{display:'inline-block',padding:'14px 20px',background:colors.accent,color:colors.background,borderRadius:14,textDecoration:'none',fontWeight:600}}>Otwórz mapę objawów RUTA →</Link>
+        <Link href="/" style={{display:'inline-block',padding:'14px 20px',border:'1px solid '+colors.line,borderRadius:14,textDecoration:'none',color:colors.text}}>Wróć do Sky Lobby</Link>
+      </section>
       <section aria-label="Motyw kolorystyczny" style={{display:'flex',gap:10,flexWrap:'wrap',marginBottom:30}}>
         {(['klasyk','grafit','noir','myskincode'] as Palette[]).map(key=><button key={key} type="button" onClick={()=>setTheme(key)} aria-pressed={theme===key} style={{cursor:'pointer',border:'1px solid '+colors.line,borderRadius:30,padding:'10px 16px',background:theme===key?colors.accent:colors.surface,color:theme===key?colors.background:colors.text}}>{key==='myskincode'?'MySkinCode':key[0].toUpperCase()+key.slice(1)}</button>)}
       </section>
