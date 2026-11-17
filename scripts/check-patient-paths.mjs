@@ -12,7 +12,7 @@ assert.match(ruta, /href="\/medycyna-estetyczna"/, 'RUTA must link back to aesth
 const tileCount = (aesthetic.match(/"code": "[0-9]{2}\.[0-9]"/g) || []).length;
 assert.equal(tileCount, 27, 'Aesthetic symptom map must contain 27 restored tiles');
 for (const department of ['proktologia', 'flebologia', 'chirurgia', 'estetyka']) {
-  assert.match(ruta, new RegExp('^  '+department+': \\{', 'm'), 'Missing department: '+department);
+  assert.match(ruta, new RegExp('"'+department+'":\\s*\\{'), 'Missing department: '+department);
 }
 assert.match(ruta, /const summary=/, 'RUTA summary must be available');
 assert.match(ruta, /Nie wpisuj danych osobowych/, 'RUTA needs a privacy notice');
