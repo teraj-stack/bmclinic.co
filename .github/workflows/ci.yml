@@ -27,5 +27,7 @@ jobs:
         run: npm ci
       - name: TypeScript check
         run: npx tsc --noEmit
+      - name: Check patient paths and navigation
+        run: node scripts/check-patient-paths.mjs
       - name: Build production application
         run: npm run build
