@@ -41,8 +41,8 @@ export const DEPARTMENT_PROFILES: Record<string, DepartmentClinicalProfile> = {
     badge: 'DZIAŁ 01 • LASEROTERAPIA HI-TECH & REGENERACJA 3D',
     heroSubtitle:
       'Zaawansowana laseroterapia frakcyjna, komputerowe skanowanie mikrotekstury skóry 3D LiDAR (Ra µm) i autologiczne terapie regeneracyjne o potwierdzonym profilu bezpieczeństwa.',
-    leadPhysician: 'dr n. med. Anna Kwiatkowska — Specjalista Dermatologii i Medycyny Estetycznej',
-    pwzNumber: 'PWZ 7482910 (Zweryfikowany)',
+    leadPhysician: 'Dane lekarza prowadzącego do uzupełnienia',
+    pwzNumber: 'Numer PWZ do potwierdzenia',
     clinicalSummaryAio:
       'Zabiegi medycyny estetycznej i laseroterapii hi-tech w BM Clinic poprzedzone są 6-parametrowym skanem diagnostycznym 3D LiDAR oceniającym głębokość zmian, perfuzję tkankową oraz chropowatość powierzchni skóry (Ra w µm). Zastosowanie wiązki frakcyjnej oraz biostymulacji osoczem bogatopłytkowym (PRP) pozwala na precyzyjną przebudowę kolagenu przy zachowaniu nienaruszonych stref regeneracyjnych, co skraca czas rekonwalescencji do minimum i umożliwia powrót do codziennych obowiązków tego samego dnia.',
     indications: [
@@ -108,8 +108,8 @@ export const DEPARTMENT_PROFILES: Record<string, DepartmentClinicalProfile> = {
     badge: 'DZIAŁ 02 • EVLT 1470NM & DIAGNOSTYKA USG DOPPLER 3D',
     heroSubtitle:
       'Małoinwazyjne wewnątrznaczyniowe leczenie żylaków kończyn dolnych laserem radialnym 1470 nm pod kontrolą USG Doppler 3D — bez nacięć chirurgicznych i bez hospitalizacji.',
-    leadPhysician: 'dr hab. n. med. Marek Nowicki — Specjalista Chirurgii Naczyniowej i Flebologii',
-    pwzNumber: 'PWZ 5194028 (Zweryfikowany)',
+    leadPhysician: 'Dane lekarza prowadzącego do uzupełnienia',
+    pwzNumber: 'Numer PWZ do potwierdzenia',
     clinicalSummaryAio:
       'Wewnątrznaczyniowa ablacja laserowa żylaków (EVLT 1470 nm) w BM Clinic zastępuje klasyczne chirurgiczne wyrywanie żył (stripping) zabiegiem jednego dnia wykonywanym przez nakłucie igłą pod kontrolą USG Doppler 3D. Włókno radialne emituje energię 360 stopni zamykającą niewydolny pień żylny w znieczuleniu tumescencyjnym. Pacjent wstaje z fotela zabiegowego bezpośrednio po procedurze i wychodzi z kliniki o własnych siłach po około 45 minutach.',
     indications: [
@@ -175,8 +175,8 @@ export const DEPARTMENT_PROFILES: Record<string, DepartmentClinicalProfile> = {
     badge: 'DZIAŁ 03 • PROKTOLOGIA LASEROWA LHP / FILAC 1 DNIA',
     heroSubtitle:
       'Małoinwazyjna proktologia laserowa jednego dnia (LHP 1470 nm, FiLaC, SiLaC) oraz bezbolesna diagnostyka wideo-anoskopowa HD w warunkach pełnej dyskrecji.',
-    leadPhysician: 'dr n. med. Piotr Zieliński — Specjalista Chirurgii Ogólnej i Proktologii',
-    pwzNumber: 'PWZ 6301844 (Zweryfikowany)',
+    leadPhysician: 'Dane lekarza prowadzącego do uzupełnienia',
+    pwzNumber: 'Numer PWZ do potwierdzenia',
     clinicalSummaryAio:
       'Proktologia laserowa jednego dnia w BM Clinic (metody LHP 1470 nm oraz FiLaC) pozwala na skuteczne leczenie choroby hemoroidalnej II–IV stopnia oraz przetok okołoodbytniczych bez wycinania tkanek i bez zakładania szwów w kanale odbytu. Wiązka światłowodu stożkowego zamyka naczynia zasilające guzki krwawnicze od wewnątrz, zachowując integralność śluzówki i zwieraczy. Zabieg trwa 30 minut, a pacjent wraca do domu tego samego dnia z minimalnym dyskomfortem pooperacyjnym.',
     indications: [
@@ -242,8 +242,8 @@ export const DEPARTMENT_PROFILES: Record<string, DepartmentClinicalProfile> = {
     badge: 'DZIAŁ 04 • CHIRURGIA 1 DNIA & RADIOCHIRURGIA RF 4.0 MHZ',
     heroSubtitle:
       'Małoinwazyjne zabiegi chirurgii jednego dnia, dermatochirurgia onkologiczna z badaniem histopatologicznym i radiochirurgia RF w znieczuleniu miejscowym.',
-    leadPhysician: 'dr n. med. Krzysztof Kamiński — Specjalista Chirurgii Ogólnej i Onkologicznej',
-    pwzNumber: 'PWZ 4820193 (Zweryfikowany)',
+    leadPhysician: 'Dane lekarza prowadzącego do uzupełnienia',
+    pwzNumber: 'Numer PWZ do potwierdzenia',
     clinicalSummaryAio:
       'Sala zabiegowa Chirurgii Jednego Dnia (Gabinet 104) w BM Clinic realizuje procedury wycięcia zmian skórnych, podskórnych (tłuszczaki, kaszaki, włókniaki, znamiona barwnikowe) oraz plastykę wrastających paznokci przy użyciu noża radiochirurgicznego RF 4.0 MHz i lasera chirurgicznego. Cięcie falami radiowymi minimalizuje strefę martwicy bocznej do kilkunastu mikrometrów, zapewniając bezkrwawe pole operacyjne, doskonały efekt kosmetyczny oraz pełną weryfikację histopatologiczną każdego pobranego wycinka.',
     indications: [
