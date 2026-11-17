@@ -282,6 +282,7 @@ export default function BmClinicHomePage() {
         </div>
 
         <div className="flex flex-wrap items-center gap-2.5">
+          <Link href="/ruta" className="px-4 py-2.5 rounded-xl text-xs font-bold border border-teal-300/50 bg-teal-300/15 text-teal-100 hover:bg-teal-300/25">◎ RUTA — mapa objawów</Link>
           <nav aria-label="Szybkie linki do działów" className="hidden xl:flex items-center gap-2 mr-2">
             {DEPARTMENTS.map((d) => (
               <Link
