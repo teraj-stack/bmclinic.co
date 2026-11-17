@@ -154,7 +154,7 @@ export default function BmClinicHomePage() {
         aioWordCount: 150,
         leadPhysicianName: physicianName.trim() || 'Lekarz Specjalista BM Clinic',
         physicianSpecialty: selectedDept,
-        pwzVerified: true,
+        pwzVerified: false,
         clinicalStudiesCited: 5,
         originalAssetsCount: 8,
         effortScore: 94,
