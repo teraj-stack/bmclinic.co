@@ -10,6 +10,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "model:generate": "node scripts/generate-page-model.mjs",
+    "model:seed-all": "node scripts/generate-page-model.mjs --seed-all",
     "db:init": "python3 bmclinic_db_engine.py",
     "vercel:preview": "vercel build && vercel deploy --prebuilt",
     "vercel:stage-prod": "vercel build --prod && vercel deploy --prebuilt --prod --skip-domain"

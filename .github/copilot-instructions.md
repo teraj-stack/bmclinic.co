@@ -9,6 +9,8 @@
    - uruchamiać migracji bazy danych ani zmieniać jej schematu,
    - wykonywać `git commit`, `git push`, `git reset` ani zmieniać gałęzi.
 
+   **ZAKAZ DLA VERCEL:** Vercel (ani żaden automatyczny deploy / agent Vercel) **nie może ruszać, modyfikować ani wdrażać projektów** bez wyraźnej pisemnej zgody właściciela.
+
 2. **Obowiązkowy tryb pracy: Propozycja → Pisemna Zgoda → Wykonanie → Kontrola Lokalna.**
    - Najpierw przedstaw krótką listę planowanych plików i zmian.
    - Dopiero po otrzymaniu pisemnej zgody wprowadź dokładnie zatwierdzony zakres.

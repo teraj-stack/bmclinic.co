@@ -1,0 +1,182 @@
+{
+  "version": 1,
+  "updatedAt": "2026-11-19T19:39:17.537Z",
+  "patientFlow": [
+    {
+      "id": "pf-1001",
+      "patientCode": "BM-2026-041",
+      "departmentSlug": "flebologia",
+      "departmentName": "Flebologia",
+      "roomCode": "GAB-102",
+      "procedureTitle": "Wewnątrznaczyniowe Laserowe Leczenie Żylaków EVLT 1470 nm",
+      "physicianName": "dr hab. n. med. Marek Nowicki — Specjalista Chirurgii Naczyniowej i Flebologii",
+      "stage": "WYPIS",
+      "channel": "AEO_AI_OVERVIEW",
+      "priority": "STANDARD",
+      "waitMinutes": 0,
+      "estimatedValuePln": 3800,
+      "updatedAt": "2026-11-19T19:06:51.647Z"
+    },
+    {
+      "id": "pf-1002",
+      "patientCode": "BM-2026-042",
+      "departmentSlug": "medycyna-estetyczna",
+      "departmentName": "Medycyna Estetyczna",
+      "roomCode": "GAB-101",
+      "procedureTitle": "Laserowy Resurfacing Frakcyjny 3D + Skan LiDAR",
+      "physicianName": "dr n. med. Anna Kwiatkowska — Specjalista Dermatologii i Medycyny Estetycznej",
+      "stage": "WYPIS",
+      "channel": "GOOGLE_SEO",
+      "priority": "VIP",
+      "waitMinutes": 0,
+      "estimatedValuePln": 1500,
+      "updatedAt": "2026-11-19T19:06:54.855Z"
+    },
+    {
+      "id": "pf-1003",
+      "patientCode": "BM-2026-043",
+      "departmentSlug": "proktologia",
+      "departmentName": "Proktologia",
+      "roomCode": "GAB-103",
+      "procedureTitle": "Laserowa Plastyka Hemoroidów LHP 1470 nm (Chirurgia 1 Dnia)",
+      "physicianName": "dr n. med. Piotr Zieliński — Specjalista Chirurgii Ogólnej i Proktologii",
+      "stage": "WYPIS",
+      "channel": "AEO_AI_OVERVIEW",
+      "priority": "PILNY",
+      "waitMinutes": 0,
+      "estimatedValuePln": 3600,
+      "updatedAt": "2026-11-19T19:39:08.488Z"
+    },
+    {
+      "id": "pf-1004",
+      "patientCode": "BM-2026-044",
+      "departmentSlug": "chirurgia-ogolna",
+      "departmentName": "Chirurgia Ogólna",
+      "roomCode": "GAB-104",
+      "procedureTitle": "Chirurgiczne i Radiochirurgiczne Usuwanie Znamion z Histopatologią",
+      "physicianName": "dr n. med. Krzysztof Kamiński — Specjalista Chirurgii Ogólnej i Onkologicznej",
+      "stage": "WYPIS",
+      "channel": "DIRECT",
+      "priority": "STANDARD",
+      "waitMinutes": 0,
+      "estimatedValuePln": 1800,
+      "updatedAt": "2026-11-19T19:39:17.537Z"
+    }
+  ],
+  "instrumentSets": [
+    {
+      "id": "inst-1",
+      "code": "ZEST-PROK-01",
+      "name": "Zestaw proktologiczny LHP / anoskopia",
+      "roomCode": "GAB-103",
+      "status": "STERYLNY",
+      "lastSterilizedAt": "2026-11-19",
+      "expiresAt": "2026-12-03",
+      "cycleCount": 42
+    },
+    {
+      "id": "inst-2",
+      "code": "ZEST-FLEB-02",
+      "name": "Zestaw flebologiczny EVLT 1470 nm + tumescencja",
+      "roomCode": "GAB-102",
+      "status": "W_UZYCIU",
+      "lastSterilizedAt": "2026-11-19",
+      "expiresAt": "2026-12-03",
+      "cycleCount": 38
+    },
+    {
+      "id": "inst-3",
+      "code": "ZEST-CHIR-03",
+      "name": "Zestaw chirurgiczny RF + pobieranie histopatologii",
+      "roomCode": "GAB-104",
+      "status": "DO_STERYLIZACJI",
+      "lastSterilizedAt": "2026-11-19",
+      "expiresAt": "2026-12-03",
+      "cycleCount": 51
+    },
+    {
+      "id": "inst-4",
+      "code": "ZEST-EST-01",
+      "name": "Zestaw końcówek laserowych + chłodzenie kontaktowe",
+      "roomCode": "GAB-101",
+      "status": "STERYLNY",
+      "lastSterilizedAt": "2026-11-19",
+      "expiresAt": "2026-12-03",
+      "cycleCount": 29
+    }
+  ],
+  "consumables": [
+    {
+      "id": "cons-1",
+      "sku": "FIB-1470-RAD",
+      "name": "Włókno laserowe radialne 1470 nm (jednorazowe)",
+      "category": "LASER",
+      "unit": "szt.",
+      "stockQty": 4,
+      "minThreshold": 5,
+      "usedToday": 2,
+      "unitCostPln": 680
+    },
+    {
+      "id": "cons-2",
+      "sku": "KIT-PRP-HD",
+      "name": "Zestaw probówek autologicznych PRP / I-PRF",
+      "category": "LASER",
+      "unit": "kpl.",
+      "stockQty": 14,
+      "minThreshold": 6,
+      "usedToday": 3,
+      "unitCostPln": 190
+    },
+    {
+      "id": "cons-3",
+      "sku": "SUT-40-MON",
+      "name": "Szwy chirurgiczne monofilamentowe 4-0 + pojemnik hist-pat",
+      "category": "CHIRURGIA",
+      "unit": "kpl.",
+      "stockQty": 18,
+      "minThreshold": 8,
+      "usedToday": 2,
+      "unitCostPln": 65
+    },
+    {
+      "id": "cons-4",
+      "sku": "DRESS-STER-L",
+      "name": "Opatrunki jałowe pooperacyjne + kompresy",
+      "category": "OPATRUNKI",
+      "unit": "op.",
+      "stockQty": 9,
+      "minThreshold": 10,
+      "usedToday": 4,
+      "unitCostPln": 42
+    }
+  ],
+  "postOpCare": [
+    {
+      "id": "po-2001",
+      "patientCode": "BM-2026-037",
+      "departmentName": "Flebologia",
+      "procedureTitle": "Wewnątrznaczyniowe Laserowe Leczenie Żylaków EVLT 1470 nm",
+      "physicianName": "Dr Jan Bujok",
+      "careCoordinator": "Milena Skrzyńska",
+      "milestone": "D+1",
+      "nextCheckDate": "2026-11-20",
+      "alertLevel": "KONTROLA",
+      "notes": "Kontakt telefoniczny po 24h: ocena komfortu, przypomnienie o pończosze uciskowej.",
+      "updatedAt": "2026-11-19T21:43:55.148Z"
+    },
+    {
+      "id": "po-2002",
+      "patientCode": "BM-2026-035",
+      "departmentName": "Proktologia",
+      "procedureTitle": "Laserowa Plastyka Hemoroidów LHP 1470 nm",
+      "physicianName": "Dr Jan Bujok",
+      "careCoordinator": "Milena Skrzyńska",
+      "milestone": "D+7",
+      "nextCheckDate": "2026-11-26",
+      "alertLevel": "BRAK",
+      "notes": "Gojenie prawidłowe. Zaplanowana wizyta kontrolna D+7.",
+      "updatedAt": "2026-11-19T21:43:55.148Z"
+    }
+  ]
+}

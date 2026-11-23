@@ -1,0 +1,18 @@
+{
+  "env": {
+    "PATH": "/Users/krzysztofjarzyna/.gemini/antigravity/scratch/.node/bin:/Users/krzysztofjarzyna/.local/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin",
+    "BMCLINIC_LOCAL_URL": "http://localhost:3002",
+    "VIBEKIT_DASHBOARD_URL": "http://localhost:3001",
+    "SUPERAGENT_DOCS_URL": "http://localhost:3000"
+  },
+  "permissions": {
+    "allow": [
+      "Bash(npm run model:generate*)",
+      "Bash(npm run model:seed-all*)",
+      "Bash(npm run build*)",
+      "Bash(node scripts/generate-page-model.mjs*)",
+      "Bash(superagent *)",
+      "Bash(vibekit *)"
+    ]
+  }
+}

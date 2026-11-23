@@ -1,7 +1,9 @@
 # Zasady Prowadzenia Budowy — BM Clinic (`bmclinic.co`)
 
 ## 1. Brak samowolki (Zasada Pisemnej Zgody)
-Żaden agent AI (Copilot, Antigravity, Claude ani inne narzędzie) nie ma prawa wprowadzać zmian w kodzie, konfiguracji, bazie danych ani w historii Git bez wcześniejszej, wyraźnej **pisemnej zgody** właściciela projektu.
+Żaden agent AI (Copilot, Antigravity, Claude, Vercel Agent ani inne narzędzie) nie ma prawa wprowadzać zmian w kodzie, konfiguracji, bazie danych, projektach Vercel ani w historii Git bez wcześniejszej, wyraźnej **pisemnej zgody** właściciela projektu.
+
+**Zasada Vercel:** Vercel nie może samodzielnie ruszać, przebudowywać ani wdrażać projektów bez wyraźnego polecenia właściciela.
 
 ## 2. Etapy prac
 1. **Budowa lokalna** — prace realizowane wyłącznie lokalnie bez `git push` i bez instalowania dodatkowych modułów.

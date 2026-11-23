@@ -4,7 +4,7 @@ export interface ControlCenterSlotDefinition {
   id: ReservedSlotId;
   title: string;
   shortLabel: string;
-  status: 'RESERVED_POST_PUSH';
+  status: 'ACTIVE';
   routePlaceholder: string;
   description: string;
   plannedCapabilities: string[];
@@ -15,23 +15,21 @@ export interface ControlCenterSlotDefinition {
 }
 
 /**
- * Zarezerwowane sloty na dodatkowe ekrany.
- * Zgodnie z BUILD_RULES.md dodatkowe moduły instalujemy dopiero po pierwszym pushu na Gita
- * i po uzyskaniu osobnej pisemnej zgody.
+ * Aktywne moduły wpięte w zarezerwowane sloty po pierwszym pushu na gałąź feat/control-center.
  */
 export const RESERVED_CONTROL_SLOTS: readonly ControlCenterSlotDefinition[] = [
   {
     id: 'tools-inventory',
     title: 'Obrót narzędzi i zużyć',
-    shortLabel: 'Slot 1: Narzędzia i zużycia',
-    status: 'RESERVED_POST_PUSH',
+    shortLabel: 'Narzędzia i zużycia',
+    status: 'ACTIVE',
     routePlaceholder: '/sterowanie?slot=tools-inventory',
     description:
-      'Zarezerwowany ekran do śledzenia obiegu zestawów narzędzi, cykli sterylizacji oraz rozchodu materiałów zużywalnych przypisanych do procedur.',
+      'Aktywny ekran obiegu zestawów narzędzi, cykli sterylizacji oraz rozchodu materiałów zużywalnych z automatycznymi alertami do panelu CEO.',
     plannedCapabilities: [
-      'Rejestr pakietów sterylnych i terminów ważności',
-      'Automatyczne zdejmowanie materiałów zużywalnych ze stanu po etapie ZABIEG',
-      'Alerty niskiego stanu magazynowego przekazywane do panelu CEO',
+      'Obieg zestawów: STERYLNY → W_UZYCIU → DO_STERYLIZACJI → W_AUTOKLAWIE → STERYLNY',
+      'Rozchód i uzupełnianie materiałów zużywalnych powiązanych z zabiegami',
+      'Alerty niskiego stanu magazynowego w panelu CEO',
     ],
     dataContract: {
       moduleOwner: 'data-analytics',
@@ -41,15 +39,15 @@ export const RESERVED_CONTROL_SLOTS: readonly ControlCenterSlotDefinition[] = [
   {
     id: 'post-op-care',
     title: 'Prowadzenie pooperacyjne',
-    shortLabel: 'Slot 2: Prowadzenie pooperacyjne',
-    status: 'RESERVED_POST_PUSH',
+    shortLabel: 'Prowadzenie pooperacyjne',
+    status: 'ACTIVE',
     routePlaceholder: '/sterowanie?slot=post-op-care',
     description:
-      'Zarezerwowany ekran do prowadzenia pacjenta po zabiegu: harmonogram kontroli, checklisty zaleceń i szybka eskalacja objawów niepokojących.',
+      'Aktywny ekran prowadzenia pacjenta po zabiegu: automatyczne przejęcie z etapu WYPIS, harmonogram kontroli D+1 / D+7 / D+30 oraz eskalacja alertów do lekarza.',
     plannedCapabilities: [
-      'Automatyczne przejęcie pacjenta z etapu WYPIS na ścieżkę kontroli pooperacyjnych',
-      'Harmonogram wizyt kontrolnych (D+1, D+7, D+30) i checklisty gojenia',
-      'Alerty pooperacyjne widoczne dla lekarza prowadzącego oraz w panelu sterującym',
+      'Automatyczne przejęcie pacjenta po kliknięciu WYPIS w Ruchu Pacjentów',
+      'Ścieżka kontroli D+1 → D+7 → D+30 → ZAKONCZONO z koordynacją Opiekuna Pacjenta',
+      'Eskalacja alertów PILNY_KONTAKT do panelu CEO',
     ],
     dataContract: {
       moduleOwner: 'data-analytics',

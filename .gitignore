@@ -25,3 +25,12 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 next-env.d.ts
+
+# Added by Antigravity sync
+.env.local
+.env.*.local
+node_modules/
+.next/
+tsconfig.tsbuildinfo
+release/
+*.app/
