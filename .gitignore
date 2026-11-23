@@ -7,3 +7,12 @@ next-env.d.ts
 data/
 *.sqlite-wal
 *.sqlite-shm
+
+# Added by Antigravity sync
+.DS_Store
+.env
+.env.local
+.env.*.local
+tsconfig.tsbuildinfo
+release/
+*.app/
